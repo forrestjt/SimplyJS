@@ -4,7 +4,6 @@
  * Copyright 2014 Simply Coding
  * https://www.simplycoding.org
  * Released under the MIT license
- * http://jquery.org/license
  *
  * Date: 2014-05-07
  */
@@ -13,16 +12,21 @@ function _sjs(){
   this.stages = [];
   this.stage = '';
 
-  this.mouse = {};
+  this.mouse = { };
   this.gx = 0;
   this.gy = 0;
-  this.scroll;
+  this.scroll
   var collisionEvents = [], collided = [];
   var key_state = {}, key_events = {};
   var _this = this;
   this.open = function(target, w, h){
     if(w == undefined && h == undefined){w=500;h=400;}
     if(w != undefined && h == undefined)h=w;
+    if(w == 0){
+      getViewportSize
+      w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) 
+      h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    }
     t = document.getElementById(target);
     if(t == undefined) {
       t = document.getElementById("target");
@@ -54,18 +58,23 @@ function _sjs(){
     this.right_screen = this.MakeObj({type: "right_screen", x:w, y:0,
                                width: 1, height: h});
     this.right_screen.getHeight = vh;
-    this.right_screen.update = function(){this.x=vw();}
+//    this.right_screen.update = function(){this.x=vw();}
+
+    this.mouse = this.MakeObj({width:1,height:1});
 
     this.makeStage("default");
 
     setInterval(function(){_this.stages[_this.stage].update();},40);
     window.onkeydown = function(e){
       key_state[e.keyCode] = true;
+      e.preventDefault();
     }
     window.onkeyup = function(e){
       key_state[e.keyCode] = false;
-      if(_this.stages[_this.stage].keyUp!=undefined)
+      if(_this.stages[_this.stage].keyUp){
         _this.stages[_this.stage].keyUp();
+        e.preventDefault();
+      }
     }
     t.onmousemove = function(e){
       _this.mouse.x = e.clientX - t.x;
@@ -79,6 +88,14 @@ function _sjs(){
     if(_this.stages[_this.stage].mouseUp!=undefined)
         _this.stages[_this.stage].mouseUp();
     }
+    t.addEventListener("touchend", function(e){
+      sjs.mouse.x = e.changedTouches[0].pageX;
+      sjs.mouse.y = e.changedTouches[0].pageY;
+      if(_this.stages[_this.stage].touchEnd){
+        _this.stages[_this.stage].touchEnd();   
+        e.preventDefault();
+      }
+    });
   }
   this.Base = function(){
     this.offset = function(x,y){
@@ -98,8 +115,8 @@ function _sjs(){
       this.node.style.top =Math.round(y)+(this.fixed?0:_this.gy)+"px";
       return this;
     }
-    this.setWidth = function(w){if(w){this.node.style.width = w+"px";}}
-    this.setHeight = function(h){if(h){this.node.style.height = h+"px";}}
+    this.setWidth = function(w){if(w){this.node.style.width = w+"px";}return this;}
+    this.setHeight = function(h){if(h){this.node.style.height = h+"px";}return this;}
     this.getX = function(){if(this.fixed)return this.x-_this.gx; return this.x;}
     this.getY = function(){if(this.fixed)return this.y-_this.gy; return this.y;}
     this.top = function(){this.y=0;return this;}
@@ -218,20 +235,20 @@ function _sjs(){
     }
 
     this.followx = function(a){
-      __this = this;
       if(a.x == undefined && a.y == undefined &&
         _this.mouse.x == undefined && _this.mouse.y == undefined){
-        (function(o){setTimeout(function(){o.followx(_this.mouse);},1000);})(this);
+        (function(o){setTimeout(function(){o.followx(_this.mouse);},100);})(this);
         return;
       }
       this.followx_obj = a;
       this.followx_last = a.x;
     }
     this.followy = function(a){
-      __this = this;
       if(a.x == undefined && a.y == undefined &&
-        _this.mouse.x == undefined && _this.mouse.y == undefined)
-        setTimeout(function(){__this.followy(_this.mouse);},1000);
+        _this.mouse.x == undefined && _this.mouse.y == undefined){
+        (function(o){setTimeout(function(){o.followx(_this.mouse);},100);})(this);
+        return;
+      }
       this.followy_obj = a;
       this.followy_last = a.y;
     }
@@ -309,7 +326,7 @@ function _sjs(){
       t.appendChild(this.node);
     }
 
-    this.setFlipImages = function(left,right){
+    this.setHFlipImages = function(left,right){
       this.left_img = left;
       this.right_img = right;
       this.facingLeft = true;
@@ -468,6 +485,11 @@ function _sjs(){
     this.stages[this.stage].mouseUp = callback;
   }
 
+  this.touchEnd = function(callback){
+    this.stages[this.stage].touchEnd = callback;
+  }
+  this.getT = function(){return t;}
+
   this.bounceOff = function(a,b){
     var d = _this.getDeltas(a,b);
     /*var e = _this.getDeltas(_this.MakeObj({x:a.x-(a.sx?a.sx:0), y:a.y-(a.sy?a.sy:0),
@@ -616,6 +638,9 @@ function _sjs(){
     return nImg;
   }
 
+  this.getWidth = function(){return t.width;}
+  this.getHeight = function(){return t.height;}
+
  // "Private" functions
 
   var _this = this;
@@ -688,6 +713,25 @@ function _sjs(){
     }
   }
 
+
+  function getViewportSize(w) {
+
+    // Use the specified window or the current window if no argument
+    w = w || window;
+
+    // This works for all browsers except IE8 and before
+    if (w.innerWidth != null) return { w: w.innerWidth, h: w.innerHeight };
+
+    // For IE (or any browser) in Standards mode
+    var d = w.document;
+    if (document.compatMode == "CSS1Compat")
+        return { w: d.documentElement.clientWidth,
+           h: d.documentElement.clientHeight };
+
+    // For browsers in Quirks mode
+    return { w: d.body.clientWidth, h: d.body.clientHeight };
+
+  }
 
 }
 var sjs = new _sjs();
