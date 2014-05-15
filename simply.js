@@ -11,7 +11,7 @@ function _sjs(){
   var t;
   this.stages = [];
   this.stage = '';
-
+  this.fullscreen = 0;
   this.mouse = { };
   this.gx = 0;
   this.gy = 0;
@@ -23,7 +23,6 @@ function _sjs(){
     if(w == undefined && h == undefined){w=500;h=400;}
     if(w != undefined && h == undefined)h=w;
     if(w == 0){
-      getViewportSize
       w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) 
       h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     }
@@ -40,6 +39,7 @@ function _sjs(){
     t.style.width    = w+"px";
     t.style.height   = h+"px";
     t.style.position = "relative";
+    t.style.overflow = "hidden";
     t.x = t.getBoundingClientRect().top;
     t.y = t.getBoundingClientRect().left;
 
@@ -58,16 +58,23 @@ function _sjs(){
     this.right_screen = this.MakeObj({type: "right_screen", x:w, y:0,
                                width: 1, height: h});
     this.right_screen.getHeight = vh;
-//    this.right_screen.update = function(){this.x=vw();}
+    this.right_screen.getX = function(){return this.offset_x+this.x;}
+    this.right_screen.offset = function(x,y){this.offset_x = x;this.offset_y=y;}
+    this.right_screen.update = function(){this.x=vw();}
+    this.right_screen.offset_x=0;
+    this.right_screen.offset_y=0;
 
     this.mouse = this.MakeObj({width:1,height:1});
+    this.mouse.x = undefined;
+    this.mouse.y = undefined;
 
     this.makeStage("default");
 
     setInterval(function(){_this.stages[_this.stage].update();},40);
     window.onkeydown = function(e){
       key_state[e.keyCode] = true;
-      e.preventDefault();
+      if(e.keyCode == UP_KEY   || e.keyCode == DOWN_KEY ||
+         e.keyCode == LEFT_KEY || e.keyCode == RIGHT_KEY)e.preventDefault();
     }
     window.onkeyup = function(e){
       key_state[e.keyCode] = false;
@@ -75,6 +82,7 @@ function _sjs(){
         _this.stages[_this.stage].keyUp();
         e.preventDefault();
       }
+
     }
     t.onmousemove = function(e){
       _this.mouse.x = e.clientX - t.x;
@@ -117,6 +125,8 @@ function _sjs(){
     }
     this.setWidth = function(w){if(w){this.node.style.width = w+"px";}return this;}
     this.setHeight = function(h){if(h){this.node.style.height = h+"px";}return this;}
+    this.scaleSize = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.setSize(this.getWidth()*a,this.getHeight()*b);}
+    this.grow = function(a,b){if(a!=undefined&&b==undefined){b=a;}var c = this.getCenter(); this.setSize(this.getWidth()+a,this.getHeight()+b); this.centerAt(c.x,c.y); }
     this.getX = function(){if(this.fixed)return this.x-_this.gx; return this.x;}
     this.getY = function(){if(this.fixed)return this.y-_this.gy; return this.y;}
     this.top = function(){this.y=0;return this;}
@@ -184,7 +194,7 @@ function _sjs(){
     this.setSize = function(w, h){if(w != undefined && h == undefined)h=w;  this.node.width=w; this.node.height=h;}
     this.hide = function(){this.node.style.display="none";return this;};
     this.show = function(){this.node.style.display="inline";return this;};
-    this.destroy = function(){removeFromStage(this);if(this.node)t.removeChild(this.node);};
+    this.destroy = function(){removeFromStage(this);if(this.node && this.node.parentNode == t)t.removeChild(this.node);};
 
     this.x = 0;
     this.y = 0;
@@ -220,10 +230,12 @@ function _sjs(){
       if(this.ay != undefined)this.sy += this.ay;
     }
     this.stop      = function(k){this.sx=0;this.sy=0;return this;}
-    this.pushUp    = function(k){this.sy-=(this.accel*this.maxSpeed*(k?k:1));return this;}
-    this.pushDown  = function(k){this.sy+=(this.accel*this.maxSpeed*(k?k:1));return this;}
-    this.pushLeft  = function(k){this.sx-=(this.accel*this.maxSpeed*(k?k:1));return this;}
-    this.pushRight = function(k){this.sx+=(this.accel*this.maxSpeed*(k?k:1));return this;}
+    this.pushUp    = function(k){this.sy-=(this.accel*this.topSpeed*(k?k:1));return this;}
+    this.pushDown  = function(k){this.sy+=(this.accel*this.topSpeed*(k?k:1));return this;}
+    this.pushLeft  = function(k){this.sx-=(this.accel*this.topSpeed*(k?k:1));return this;}
+    this.pushRight = function(k){this.sx+=(this.accel*this.topSpeed*(k?k:1));return this;}
+    this.scaleSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx*=a;this.sy*=b;}
+    this.getClamp = function(){return {x: vw()-this.getWidth(),y:vh()-this.getHeight()};}
 
     this.bounce = function(){this.noBounds=true;
       if(this.type==undefined)this.type="object";
@@ -278,10 +290,13 @@ function _sjs(){
     this.onClick = function(callback){ this.node.onclick=callback; }
     this.onMouseDown = function(callback){this.node.onmousedown=callback; }
     this.onMouseUp = function(callback){ this.node.onmouseup=callback; }
+    this.setXSpeed = function(sx){if(sx!=undefined){this.sx=sx;}}
+    this.setYSpeed = function(sy){if(sy!=undefined){this.sy=sy;}}
+    this.setGravity = function(g){if(g==undefined){g=1;}this.ay=g;}
     this.sx = 0;
     this.sy = 0;
     this.accel = .15;
-    this.maxSpeed = 10;
+    this.topSpeed = 10;
     this.friction = .05;
   }
   this.Moveable.prototype = baseObj;
@@ -561,26 +576,28 @@ function _sjs(){
   }
   
 
-  this.onHit = function(a,b,callback,percent){
-    
+  this.onHit = function(a,b,callback,percent,stages){
+    if(stages==undefined){stages=[this.stage];}
+    if(typeof(stages)=="string")stages = [stages];
+      console.log(stages);
     if(typeof(a) == "object" && typeof(b) == "object") {
       for(var i=0;i<b.length;i++)
         for(var j=0;j<a.length;j++)
-        addCollisionEvent({handler: callback, aType: a[j], bType: b[i], flag: true, per:percent});
+        addCollisionEvent({handler: callback, aType: a[j], bType: b[i], flag: true, per:percent, stages: stages});
 
     }
     if(typeof(a) == "object" && typeof(b) == "string") {
       for(var i=0;i<a.length;i++)
-        addCollisionEvent({handler: callback, aType: a[i], bType: b, flag: true, per:percent});
+        addCollisionEvent({handler: callback, aType: a[i], bType: b, flag: true, per:percent, stages: stages});
       
     }
     if(typeof(a) == "string" && typeof(b) == "object") {
       for(var i=0;i<b.length;i++)
-        addCollisionEvent({handler: callback, aType: a, bType: b[i], flag: true, per:percent});
+        addCollisionEvent({handler: callback, aType: a, bType: b[i], flag: true, per:percent, stages: stages});
       
     }
     if(typeof(a) == "string" && typeof(b) == "string") {
-    addCollisionEvent({handler: callback, aType: a, bType: b, flag: true, per:percent});
+    addCollisionEvent({handler: callback, aType: a, bType: b, flag: true, per:percent, stages: stages});
    //  collisionEvents.push({handler: callback, aType: a, bType: b, flag: true, per:percent});
 
     }
@@ -671,7 +688,8 @@ function _sjs(){
 
     if(e.aType == a.type && e.bType == b.type ){
       if( _this.testCollision(a, b) ){
-        if(e.per == undefined || e.per < _this.getOverlapRatio(a,b))
+        if((e.per == undefined || e.per < _this.getOverlapRatio(a,b)) &&
+           e.stages.indexOf(_this.stage)!=-1)
         {
           if(inArray([a,b],collided) == -1 &&
              inArray([b,a],collided) == -1){
