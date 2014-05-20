@@ -43,12 +43,12 @@ function _sjs(){
     t.x = t.getBoundingClientRect().top;
     t.y = t.getBoundingClientRect().left;
 
-    this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-1,
-                             width: w, height: 1});
+    this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-50,
+                             width: w, height: 50});
     this.top_screen.getWidth = vw;
 
     this.bottom_screen = this.MakeObj({type: "bottom_screen", x:0, y:h,
-                                width: w, height: 10});
+                                width: w, height: 50});
     this.bottom_screen.getWidth = vw;
     
     this.left_screen = this.MakeObj({type: "left_screen", x:-1, y:0,
@@ -63,6 +63,13 @@ function _sjs(){
     this.right_screen.update = function(){this.x=vw();}
     this.right_screen.offset_x=0;
     this.right_screen.offset_y=0;
+
+    this.bottom_screen.getWidth = vw;
+    this.bottom_screen.getY = function(){return this.offset_y + this.y;}
+    this.bottom_screen.offset = function(x,y){this.offset_x=x;this.offset_y=y;}
+    this.bottom_screen.update = function(){this.y=vh();}
+    this.bottom_screen.offset_y=0;
+    this.bottom_screen.offset_x=0;
 
     this.mouse = this.MakeObj({width:1,height:1});
     this.mouse.x = undefined;
@@ -156,21 +163,24 @@ function _sjs(){
       return {x:this.x+(this.getWidth()/2), y:this.y+(this.getHeight()/2) };
     }
     this.isLeftOf = function(a){
-      return ((this.getCenter().x - a.getCenter().x) < 0);
+      return (this.getCenter().x < a.getCenter().x);
     }
     this.isRightOf = function(a){
-      return ((this.getCenter().x - a.getCenter().x) > 0);
+      return (this.getCenter().x > a.getCenter().x);
     }
     this.isTopOf = function(a){
-      return ((this.getCenter().y - a.getCenter().y) < 0);
+      return (this.getCenter().y < a.getCenter().y);
     }
     this.isBottomOf = function(a){
-      return ((this.getCenter().y - a.getCenter().y) > 0);
+      return (this.getCenter().y > a.getCenter().y);
     }
     this.isAboveOf = function(a,p){
-      if(p==undefined)p=.2;
+      /*if(p==undefined)p=.5;
       var h = this.getY() + this.getHeight();
-      return (((h - a.getY()) / this.getHeight())<p);
+      return ((Math.abs(h - a.getY()) / this.getHeight())>p);
+      */
+      var d = _this.getDeltas(a,this);
+      return (d.x > d.y);
     }
     this.moveLeftOf = function(a){
       this.x=a.getX()-this.getWidth();
@@ -493,6 +503,7 @@ function _sjs(){
         i--;
       }
     }
+    _this.addScreens();
   }
   this.addKeysFromStage = function(stage){
     for(k in key_events[stage])
@@ -525,13 +536,13 @@ function _sjs(){
     d.x = (d.x+e.x)/2;
     d.y = (d.y+e.y)/2;
     */
-    if(a.facingLeft != undefined)a.faceHFlip();
 
     if(d.x < d.y){
       if(a.isLeftOf(b))a.moveLeftOf(b);
       if(a.isRightOf(b))a.moveRightOf(b);
       a.sx *= -1;
       a.sx += (b.sx?b.sx:0)/4;
+      if(a.facingLeft != undefined)a.faceHFlip();
     }
     if(d.x > d.y){
       if(a.isTopOf(b))a.moveTopOf(b);
@@ -591,7 +602,6 @@ function _sjs(){
   this.onHit = function(a,b,callback,percent,stages){
     if(stages==undefined){stages=[this.stage];}
     if(typeof(stages)=="string")stages = [stages];
-      console.log(stages);
     if(typeof(a) == "object" && typeof(b) == "object") {
       for(var i=0;i<b.length;i++)
         for(var j=0;j<a.length;j++)
