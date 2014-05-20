@@ -1,7 +1,7 @@
 /*
  * SimplyJS JavaScript Library v1.0
  *
- * Copyright 2014 Simply Coding
+ * Copyright(c) 2014 Simply Coding
  * https://www.simplycoding.org
  * Released under the MIT license
  *
@@ -15,7 +15,7 @@ function _sjs(){
   this.mouse = { };
   this.gx = 0;
   this.gy = 0;
-  this.scroll
+  this.scroll;
   var collisionEvents = [], collided = [];
   var key_state = {}, key_events = {};
   var _this = this;
@@ -48,7 +48,7 @@ function _sjs(){
     this.top_screen.getWidth = vw;
 
     this.bottom_screen = this.MakeObj({type: "bottom_screen", x:0, y:h,
-                                width: w, height: 1});
+                                width: w, height: 10});
     this.bottom_screen.getWidth = vw;
     
     this.left_screen = this.MakeObj({type: "left_screen", x:-1, y:0,
@@ -167,21 +167,22 @@ function _sjs(){
     this.isBottomOf = function(a){
       return ((this.getCenter().y - a.getCenter().y) > 0);
     }
+    this.isAboveOf = function(a,p){
+      if(p==undefined)p=.2;
+      var h = this.getY() + this.getHeight();
+      return (((h - a.getY()) / this.getHeight())<p);
+    }
     this.moveLeftOf = function(a){
-      c=a.getCenter();
-      this.x=(c.x-a.getWidth()/2)-this.getWidth();
+      this.x=a.getX()-this.getWidth();
     }
     this.moveRightOf = function(a){
-      c=a.getCenter();
-      this.x=(c.x+a.getWidth()/2);
+      this.x=a.getX()+a.getWidth();
     } 
     this.moveTopOf = function(a){
-      c=a.getCenter();
-      this.y=(c.y-a.getHeight()/2)-this.getHeight();
+      this.y=a.getY()-this.getHeight();
     }
     this.moveBottomOf = function(a){
-      c=a.getCenter();
-      this.y=(c.y+a.getHeight()/2);
+      this.y=a.getY()+a.getHeight();
     }
     this.centerAt = function(nx, ny){
       this.x = nx-this.getWidth()/2;
@@ -235,6 +236,7 @@ function _sjs(){
     this.pushLeft  = function(k){this.sx-=(this.accel*this.topSpeed*(k?k:1));return this;}
     this.pushRight = function(k){this.sx+=(this.accel*this.topSpeed*(k?k:1));return this;}
     this.scaleSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx*=a;this.sy*=b;}
+    this.adjustSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx+=a;this.sy+=b;}
     this.getClamp = function(){return {x: vw()-this.getWidth(),y:vh()-this.getHeight()};}
 
     this.bounce = function(){this.noBounds=true;
@@ -293,6 +295,7 @@ function _sjs(){
     this.setXSpeed = function(sx){if(sx!=undefined){this.sx=sx;}}
     this.setYSpeed = function(sy){if(sy!=undefined){this.sy=sy;}}
     this.setGravity = function(g){if(g==undefined){g=1;}this.ay=g;}
+    this.removeGravity = function(){this.ay=0;}
     this.sx = 0;
     this.sy = 0;
     this.accel = .15;
@@ -347,19 +350,20 @@ function _sjs(){
       this.facingLeft = true;
     }
     this.isFacingLeft = function(){return this.facingLeft;}
+    this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
-      if(!this.facingLeft){
+      if(!this.facingLeft && this.left_img){
         this.setImage(this.left_img);this.facingLeft=true;
       }
     }
     this.isFacingRight = function(){return !this.facingLeft;}
     this.faceRight = function(){
-      if(this.facingLeft || this.facingLeft == undefined ){
+      if((this.facingLeft || this.facingLeft == undefined) && this.right_img){
         this.setImage(this.right_img);
         this.facingLeft=false;
       }
     }
-    this.faceFlip = function(){
+    this.faceHFlip = function(){
       if(this.facingLeft)
         this.faceRight();
       else
@@ -414,15 +418,20 @@ function _sjs(){
     _this.addToStage(this);
   }
   this.Text.prototype = baseObj;
+  this.addScreens = function(){
+    this.stages[this.stage].objects.push(this.top_screen);
+    this.stages[this.stage].objects.push(this.bottom_screen);
+    this.stages[this.stage].objects.push(this.left_screen);
+    this.stages[this.stage].objects.push(this.right_screen);
+  }
 
   this.makeStage = function(s){
     if(this.stages[s] == undefined){
       this.stages[s] = {objects: [], update: this.updateStage};
-      this.stages[s].objects.push(this.top_screen);
-      this.stages[s].objects.push(this.bottom_screen);
-      this.stages[s].objects.push(this.left_screen);
-      this.stages[s].objects.push(this.right_screen);
       key_events[s] = {};
+      this.setStage(s);
+      this.addScreens();
+    } else {
       this.setStage(s);
     }
   }
@@ -434,7 +443,7 @@ function _sjs(){
       for(var i=0;i<this.stages[s].objects.length;i++)
         this.stages[s].objects[i].show();
       this.stage = s;
-    }
+    } else { this.makeStage(s); }
   }
 
   this.clearStage = function(){
@@ -460,6 +469,8 @@ function _sjs(){
     if(_this.scroll){
       _this.gx = _this.clamp((t.width/2) - (_this.scroll.obj.x+(_this.scroll.obj.getWidth()/2)), -(_this.scroll.area.getWidth()-t.width),0);
       _this.bottom_screen.getWidth=function(){return _this.scroll.area.getWidth();}
+
+      _this.gy = _this.clamp((t.height/2) - (_this.scroll.obj.y+(_this.scroll.obj.getHeight()/2)), -(_this.scroll.area.getHeight()-t.height),0);
       //_this.gy = (t.height/2) - (_this.scroll.obj.y+(_this.scroll.obj.getHeight()/2));
     }
   }
@@ -514,18 +525,19 @@ function _sjs(){
     d.x = (d.x+e.x)/2;
     d.y = (d.y+e.y)/2;
     */
+    if(a.facingLeft != undefined)a.faceHFlip();
 
     if(d.x < d.y){
       if(a.isLeftOf(b))a.moveLeftOf(b);
       if(a.isRightOf(b))a.moveRightOf(b);
       a.sx *= -1;
-      a.sx += (b.sx?b.sx:0)/8;
+      a.sx += (b.sx?b.sx:0)/4;
     }
     if(d.x > d.y){
       if(a.isTopOf(b))a.moveTopOf(b);
       if(a.isBottomOf(b))a.moveBottomOf(b);
       a.sy *= -1;
-      a.sy += (b.sy?b.sy:0)/8;
+      a.sy += (b.sy?b.sy:0)/4;
     }
     /*if(d.x == d.y){
       a.sx *= -1; a.sy *= -1;
@@ -538,11 +550,11 @@ function _sjs(){
     var d = sjs.getDeltas(a,b);
     if(d.x >= d.y){
       if(a.isTopOf(b))a.moveTopOf(b);
-      if(a.isBottomOf(b))a.moveBottomOf(b);
+      else if(a.isBottomOf(b))a.moveBottomOf(b);
       a.sy=0;
     } else {
       if(a.isLeftOf(b))a.moveLeftOf(b);
-      if(a.isRightOf(b))a.moveRightOf(b);
+      else if(a.isRightOf(b))a.moveRightOf(b);
       a.sx=0;
     }
   }
@@ -637,6 +649,9 @@ function _sjs(){
   this.scrollable = function(follow, area){
     this.scroll = {obj: follow, area: area};
   }
+  this.addCopyOfArray = function(a){
+    for(var i=0;i<a.length;i++)this.addCopyToStage(a[i]);
+  }
 
   this.addCopyToStage = function(o){
     var nImg = new _this.Image(o.src);   
@@ -651,6 +666,7 @@ function _sjs(){
     nImg.left_img = o.left_img;
     nImg.right_img = o.right_img;
     nImg.facingLeft = o.facingLeft;
+    nImg.noBounds = o.noBounds;
 
     return nImg;
   }
