@@ -206,6 +206,7 @@ function _sjs(){
     this.hide = function(){this.node.style.display="none";return this;};
     this.show = function(){this.node.style.display="inline";return this;};
     this.destroy = function(){removeFromStage(this);if(this.node && this.node.parentNode == t)t.removeChild(this.node);};
+    this.makeGlobal = function(){_this.removeFromStage(this);this.node.style.zIndex="100";}
 
     this.x = 0;
     this.y = 0;
@@ -222,12 +223,12 @@ function _sjs(){
       this.sy -= this.friction*this.sy;
 
       if(this.followx_obj && this.followx_last){
-        this.x += (this.followx_obj.x - this.followx_last);
-        this.followx_last = this.followx_obj.x;
+        this.x += (this.followx_obj.getX() - this.followx_last);
+        this.followx_last = this.followx_obj.getX();
       }
       if(this.followy_obj && this.followy_last){
-        this.y += (this.followy_obj.y - this.followy_last);
-        this.followy_last = this.followy_obj.y;
+        this.y += (this.followy_obj.getY() - this.followy_last);
+        this.followy_last = this.followy_obj.getY();
       }
 
       if(this.noBounds==undefined){
@@ -357,7 +358,10 @@ function _sjs(){
     this.setHFlipImages = function(left,right){
       this.left_img = left;
       this.right_img = right;
-      this.facingLeft = true;
+      if(this.facingLeft === undefined){
+        this.facingLeft = false;
+        this.faceLeft();
+      } else { this.setImage(this.facingLeft?this.left_img:this.right_img); }
     }
     this.isFacingLeft = function(){return this.facingLeft;}
     this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
@@ -503,7 +507,7 @@ function _sjs(){
         i--;
       }
     }
-    _this.addScreens();
+    if(type==undefined)_this.addScreens();
   }
   this.addKeysFromStage = function(stage){
     for(k in key_events[stage])
@@ -672,16 +676,16 @@ function _sjs(){
     nImg.sx = o.sx;
     nImg.sy = o.sy;
     nImg.ay = o.ay;
-    nImg.friction = o.friction;
-    nImg.left_img = o.left_img;
-    nImg.right_img = o.right_img;
+    nImg.friction   = o.friction;
+    nImg.left_img   = o.left_img;
+    nImg.right_img  = o.right_img;
     nImg.facingLeft = o.facingLeft;
-    nImg.noBounds = o.noBounds;
+    nImg.noBounds   = o.noBounds;
 
     return nImg;
   }
 
-  this.getWidth = function(){return t.width;}
+  this.getWidth  = function(){return t.width;}
   this.getHeight = function(){return t.height;}
 
  // "Private" functions
@@ -784,3 +788,4 @@ var UP_KEY    = 38;
 var DOWN_KEY  = 40;
 var LEFT_KEY  = 37;
 var RIGHT_KEY = 39;
+var SPACE_KEY = 32;
