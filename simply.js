@@ -675,8 +675,6 @@ function _sjs(){
     nImg.node.height = o.node.height;
     nImg.sx = o.sx;
     nImg.sy = o.sy;
-    nImg.ay = o.ay;
-    nImg.friction   = o.friction;
     nImg.left_img   = o.left_img;
     nImg.right_img  = o.right_img;
     nImg.facingLeft = o.facingLeft;
@@ -713,7 +711,7 @@ function _sjs(){
   function testCollisionBetween(e, a, b){
     if(a == undefined || b == undefined || e == undefined)return;
     if(a.type == undefined || b.type == undefined || a == b)return;
-    if(e.bType == a.type && e.aType == b.type )
+    if(e.bType == a.type && e.aType == b.type && e.bType !== e.aType)
       testCollisionBetween(e,b,a);
 
     if(e.aType == a.type && e.bType == b.type ){
