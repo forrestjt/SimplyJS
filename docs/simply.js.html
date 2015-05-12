@@ -1,4 +1,32 @@
-/*
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: simply.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: simply.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
  * SimplyJS JavaScript Library v1.0.1
  *
  * Copyright(c) 2014 Simply Coding
@@ -36,8 +64,8 @@ function _sjs(){
    * Defaults to 400.
    */
   this.open = function(target, w, h){
-    if(w == undefined && h == undefined){w=500;h=400;}
-    if(w != undefined && h == undefined)h=w;
+    if(w == undefined &amp;&amp; h == undefined){w=500;h=400;}
+    if(w != undefined &amp;&amp; h == undefined)h=w;
     if(w == 0){
       w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) 
       h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -163,8 +191,8 @@ function _sjs(){
      * @param {number} y - the new y coordinate
      */
     this.moveTo = function(x,y){
-      if(x==undefined && y==undefined){x=this.x;y=this.y;}
-      if(y==undefined && x!=undefined){
+      if(x==undefined &amp;&amp; y==undefined){x=this.x;y=this.y;}
+      if(y==undefined &amp;&amp; x!=undefined){
         this.x=x; this.y=x;
       } else {
         this.x=x; this.y=y;
@@ -194,7 +222,7 @@ function _sjs(){
      * @param {number} a - the amount to scale the width in pixels
      * @param {number} b - the amount to scale the height in pixels (optional)
      */
-    this.scaleSize = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.setSize(this.getWidth()*a,this.getHeight()*b);}
+    this.scaleSize = function(a,b){if(a!=undefined&amp;&amp;b==undefined){b=a;}this.setSize(this.getWidth()*a,this.getHeight()*b);}
 
     /**
      * @func module:sjs.Base#grow
@@ -202,7 +230,7 @@ function _sjs(){
      * @param {number} a - the amount to increase the height in pixels
      * @param {number} b - the amount to increase the width in pixels
      */
-    this.grow = function(a,b){if(a!=undefined&&b==undefined){b=a;}var c = this.getCenter(); this.setSize(this.getWidth()+a,this.getHeight()+b); this.centerAt(c.x,c.y); }
+    this.grow = function(a,b){if(a!=undefined&amp;&amp;b==undefined){b=a;}var c = this.getCenter(); this.setSize(this.getWidth()+a,this.getHeight()+b); this.centerAt(c.x,c.y); }
 
  
     /**
@@ -287,7 +315,7 @@ function _sjs(){
      * @returns {boolean} true if the object is left of the passed object
      */
     this.isLeftOf = function(a){
-      return (this.getCenter().x < a.getCenter().x);
+      return (this.getCenter().x &lt; a.getCenter().x);
     }
 
     /**
@@ -307,7 +335,7 @@ function _sjs(){
      * @returns {boolean} true if the object is above of the passed object
      */
     this.isTopOf = function(a){
-      return (this.getCenter().y < a.getCenter().y);
+      return (this.getCenter().y &lt; a.getCenter().y);
     }
 
     /**
@@ -402,7 +430,7 @@ function _sjs(){
      * @params w {number} the value to set the width to
      * @params h {number} the value to set the height to
      */
-    this.setSize = function(w, h){if(w != undefined && h == undefined)h=w;  this.node.width=w; this.node.height=h;}
+    this.setSize = function(w, h){if(w != undefined &amp;&amp; h == undefined)h=w;  this.node.width=w; this.node.height=h;}
 
     /**
      * @func module:sjs.Base#hide
@@ -420,7 +448,7 @@ function _sjs(){
      * @func module:sjs.Base#destroy
      * @desc Removes the object from the stage, and removes the node from the DOM.
      */
-    this.destroy = function(){removeFromStage(this);if(this.node && this.node.parentNode == t)t.removeChild(this.node);};
+    this.destroy = function(){removeFromStage(this);if(this.node &amp;&amp; this.node.parentNode == t)t.removeChild(this.node);};
 
 
     /**
@@ -444,16 +472,16 @@ function _sjs(){
 
     this.update = function(){
       this.x += this.sx; this.y += this.sy;
-      if(Math.abs(this.sx) < 0.5)this.sx=0;
-      if(Math.abs(this.sy) < 0.5)this.sy=0;
+      if(Math.abs(this.sx) &lt; 0.5)this.sx=0;
+      if(Math.abs(this.sy) &lt; 0.5)this.sy=0;
       this.sx -= this.friction*this.sx;
       this.sy -= this.friction*this.sy;
 
-      if(this.followx_obj && this.followx_last){
+      if(this.followx_obj &amp;&amp; this.followx_last){
         this.x += (this.followx_obj.getX() - this.followx_last);
         this.followx_last = this.followx_obj.getX();
       }
-      if(this.followy_obj && this.followy_last){
+      if(this.followy_obj &amp;&amp; this.followy_last){
         this.y += (this.followy_obj.getY() - this.followy_last);
         this.followy_last = this.followy_obj.getY();
       }
@@ -464,8 +492,8 @@ function _sjs(){
         c = _this.clamp(this.y, 0, vh()-this.getHeight());
         if(c != this.y){this.sy=0;this.y=c;}
       }
-      if(this.max_x != undefined && this.min_x != undefined)this.x = _this.clamp(this.x, this.min_x, this.max_x);
-      if(this.max_y != undefined && this.min_y != undefined)this.y = _this.clamp(this.y, this.min_y, this.max_y);
+      if(this.max_x != undefined &amp;&amp; this.min_x != undefined)this.x = _this.clamp(this.x, this.min_x, this.max_x);
+      if(this.max_y != undefined &amp;&amp; this.min_y != undefined)this.y = _this.clamp(this.y, this.min_y, this.max_y);
       if(this.ay != undefined)this.sy += this.ay;
     }
     this.stop      = function(k){this.sx=0;this.sy=0;return this;}
@@ -473,8 +501,8 @@ function _sjs(){
     this.pushDown  = function(k){this.sy+=(this.accel*this.topSpeed*(k?k:1));return this;}
     this.pushLeft  = function(k){this.sx-=(this.accel*this.topSpeed*(k?k:1));return this;}
     this.pushRight = function(k){this.sx+=(this.accel*this.topSpeed*(k?k:1));return this;}
-    this.scaleSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx*=a;this.sy*=b;}
-    this.adjustSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx+=a;this.sy+=b;}
+    this.scaleSpeed = function(a,b){if(a!=undefined&amp;&amp;b==undefined){b=a;}this.sx*=a;this.sy*=b;}
+    this.adjustSpeed = function(a,b){if(a!=undefined&amp;&amp;b==undefined){b=a;}this.sx+=a;this.sy+=b;}
     this.getClamp = function(){return {x: vw()-this.getWidth(),y:vh()-this.getHeight()};}
 
     this.bounce = function(){this.noBounds=true;
@@ -487,8 +515,8 @@ function _sjs(){
     }
 
     this.followx = function(a){
-      if(a.x == undefined && a.y == undefined &&
-        _this.mouse.x == undefined && _this.mouse.y == undefined){
+      if(a.x == undefined &amp;&amp; a.y == undefined &amp;&amp;
+        _this.mouse.x == undefined &amp;&amp; _this.mouse.y == undefined){
         (function(o){setTimeout(function(){o.followx(_this.mouse);},100);})(this);
         return;
       }
@@ -496,8 +524,8 @@ function _sjs(){
       this.followx_last = a.x;
     }
     this.followy = function(a){
-      if(a.x == undefined && a.y == undefined &&
-        _this.mouse.x == undefined && _this.mouse.y == undefined){
+      if(a.x == undefined &amp;&amp; a.y == undefined &amp;&amp;
+        _this.mouse.x == undefined &amp;&amp; _this.mouse.y == undefined){
         (function(o){setTimeout(function(){o.followx(_this.mouse);},100);})(this);
         return;
       }
@@ -546,22 +574,22 @@ function _sjs(){
   /**
    * @class module:sjs.Image
    * @classdesc Contains functionality for representing Objects with images.
-   * @desc Use <b>new sjs.Image()</b> to create a new instance.
+   * @desc Use &lt;b>new sjs.Image()&lt;/b> to create a new instance.
    * @extends module:sjs.Movable
    */
   this.Image = function(src,width,height) {
-    if(height == undefined && width != undefined){
+    if(height == undefined &amp;&amp; width != undefined){
       var w = width; var h = width;
     } else {
       var w = width; var h = height;
     }
     this.setImage = function(src, width, height){
-      if(height == undefined && width != undefined){
+      if(height == undefined &amp;&amp; width != undefined){
         var w = width; var h = width;
       } else {
         var w = width; var h = height;
       }
-      if(height == undefined && width == undefined){
+      if(height == undefined &amp;&amp; width == undefined){
         w = this.getWidth(); h = this.getHeight();
       }
       if(this.node)t.removeChild(this.node);
@@ -573,7 +601,7 @@ function _sjs(){
       newnode.onmouseup  =this.node.onmouseup;
       newnode.onclick    =this.node.onclick;
       this.node = newnode;
-      if(w && h) {
+      if(w &amp;&amp; h) {
         this.node.width = w; this.node.height = h;
       }
       this.offset(0,0);
@@ -599,13 +627,13 @@ function _sjs(){
     this.isFacingLeft = function(){return this.facingLeft;}
     this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
-      if(!this.facingLeft && this.left_img){
+      if(!this.facingLeft &amp;&amp; this.left_img){
         this.setImage(this.left_img);this.facingLeft=true;
       }
     }
     this.isFacingRight = function(){return !this.facingLeft;}
     this.faceRight = function(){
-      if((this.facingLeft || this.facingLeft == undefined) && this.right_img){
+      if((this.facingLeft || this.facingLeft == undefined) &amp;&amp; this.right_img){
         this.setImage(this.right_img);
         this.facingLeft=false;
       }
@@ -622,7 +650,7 @@ function _sjs(){
     this.node.src = src;
     this.node.style.position = "absolute";
     this.node.ondragstart=function(){return false;};
-    if(w && h) {
+    if(w &amp;&amp; h) {
       this.node.width = w; this.node.height = h;
     }
     t.appendChild(this.node);
@@ -632,7 +660,7 @@ function _sjs(){
 
   /**
   * @class module:sjs.Button
-  * @classdesc A simple wrapper for &lt;button&gt; DOM elements.
+  * @classdesc A simple wrapper for &amp;lt;button&amp;gt; DOM elements.
   * @extends module:sjs.Base
   */
   this.Button = function(txt, callback, size, color) {
@@ -654,7 +682,7 @@ function _sjs(){
 
   /**
   * @class module:sjs.Text
-  * @classdesc A simple wrapper for &lt;span&gt; DOM elements.
+  * @classdesc A simple wrapper for &amp;lt;span&amp;gt; DOM elements.
   * @extends module:sjs.Base
   */
   this.Text = function(txt, size, color, font){
@@ -695,9 +723,9 @@ function _sjs(){
 
   this.setStage = function(s){
     if(this.stages[s]!=undefined) {
-      for(var i=0;this.stage!=''&&i<this.stages[this.stage].objects.length;i++)
+      for(var i=0;this.stage!=''&amp;&amp;i&lt;this.stages[this.stage].objects.length;i++)
         this.stages[this.stage].objects[i].hide();
-      for(var i=0;i<this.stages[s].objects.length;i++)
+      for(var i=0;i&lt;this.stages[s].objects.length;i++)
         this.stages[s].objects[i].show();
       this.stage = s;
     } else { this.makeStage(s); }
@@ -708,13 +736,13 @@ function _sjs(){
   }
 
   this.updateStage = function(){
-    for(var i=0;i<this.objects.length;i++){
+    for(var i=0;i&lt;this.objects.length;i++){
       this.objects[i].update();
     }
 
     _this.testCollisions();
 
-    for(var i=0;i<this.objects.length;i++){
+    for(var i=0;i&lt;this.objects.length;i++){
       this.objects[i].moveTo();
     }
 
@@ -733,9 +761,9 @@ function _sjs(){
   }
 
   this.testCollisions = function(){
-    for(var i=0;i<this.stages[this.stage].objects.length;i++){
-      for(var j=i;j<this.stages[this.stage].objects.length;j++){
-        for(var k=0;k<collisionEvents.length;k++){
+    for(var i=0;i&lt;this.stages[this.stage].objects.length;i++){
+      for(var j=i;j&lt;this.stages[this.stage].objects.length;j++){
+        for(var k=0;k&lt;collisionEvents.length;k++){
           testCollisionBetween(collisionEvents[k],this.stages[this.stage].objects[i],
             this.stages[this.stage].objects[j]);
         }
@@ -744,7 +772,7 @@ function _sjs(){
   }
 
   this.destroyAll = function(type){
-    for(var i=0;i<this.stages[this.stage].objects.length;i++){
+    for(var i=0;i&lt;this.stages[this.stage].objects.length;i++){
       if(this.stages[this.stage].objects[i].type == type || !type){
         this.stages[this.stage].objects[i].destroy();
         i--;
@@ -784,7 +812,7 @@ function _sjs(){
     d.y = (d.y+e.y)/2;
     */
 
-    if(d.x < d.y){
+    if(d.x &lt; d.y){
       if(a.isLeftOf(b))a.moveLeftOf(b);
       if(a.isRightOf(b))a.moveRightOf(b);
       a.sx *= -1;
@@ -834,10 +862,10 @@ function _sjs(){
   }
 
   addCollisionEvent = function(e){
-    for(var i=0;i<collisionEvents.length;i++){
+    for(var i=0;i&lt;collisionEvents.length;i++){
       if(   (collisionEvents[i].aType == e.aType
-          && collisionEvents[i].bType == e.bType) ||
-            (collisionEvents[i].bType == e.aType &&
+          &amp;&amp; collisionEvents[i].bType == e.bType) ||
+            (collisionEvents[i].bType == e.aType &amp;&amp;
              collisionEvents[i].aType == e.bType))
          {collisionEvents.splice(i,1);i--;}
     }
@@ -865,23 +893,23 @@ function _sjs(){
   this.onHit = function(a,b,callback,percent,stages){
     if(stages==undefined){stages=[this.stage];}
     if(typeof(stages)=="string")stages = [stages];
-    if(typeof(a) == "object" && typeof(b) == "object") {
-      for(var i=0;i<b.length;i++)
-        for(var j=0;j<a.length;j++)
+    if(typeof(a) == "object" &amp;&amp; typeof(b) == "object") {
+      for(var i=0;i&lt;b.length;i++)
+        for(var j=0;j&lt;a.length;j++)
         addCollisionEvent({handler: callback, aType: a[j], bType: b[i], flag: true, per:percent, stages: stages});
 
     }
-    if(typeof(a) == "object" && typeof(b) == "string") {
-      for(var i=0;i<a.length;i++)
+    if(typeof(a) == "object" &amp;&amp; typeof(b) == "string") {
+      for(var i=0;i&lt;a.length;i++)
         addCollisionEvent({handler: callback, aType: a[i], bType: b, flag: true, per:percent, stages: stages});
       
     }
-    if(typeof(a) == "string" && typeof(b) == "object") {
-      for(var i=0;i<b.length;i++)
+    if(typeof(a) == "string" &amp;&amp; typeof(b) == "object") {
+      for(var i=0;i&lt;b.length;i++)
         addCollisionEvent({handler: callback, aType: a, bType: b[i], flag: true, per:percent, stages: stages});
       
     }
-    if(typeof(a) == "string" && typeof(b) == "string") {
+    if(typeof(a) == "string" &amp;&amp; typeof(b) == "string") {
     addCollisionEvent({handler: callback, aType: a, bType: b, flag: true, per:percent, stages: stages});
    //  collisionEvents.push({handler: callback, aType: a, bType: b, flag: true, per:percent});
 
@@ -911,7 +939,7 @@ function _sjs(){
     obj.show();
   }
   this.removeFromStage = function(obj){
-    for(i=0;i<this.stages[this.stage].objects.length;i++) {
+    for(i=0;i&lt;this.stages[this.stage].objects.length;i++) {
       if(obj == this.stages[this.stage].objects[i]) {
         this.stages[this.stage].objects.splice(i,1);
         i--;
@@ -923,7 +951,7 @@ function _sjs(){
     this.scroll = {obj: follow, area: area};
   }
   this.addCopyOfArray = function(a){
-    for(var i=0;i<a.length;i++)this.addCopyToStage(a[i]);
+    for(var i=0;i&lt;a.length;i++)this.addCopyToStage(a[i]);
   }
 
   this.addCopyToStage = function(o){
@@ -955,7 +983,7 @@ function _sjs(){
 
 
   function removeFromStage(obj){
-    for(var i=0;i<_this.stages[_this.stage].objects.length;i++){
+    for(var i=0;i&lt;_this.stages[_this.stage].objects.length;i++){
       if(obj == _this.stages[_this.stage].objects[i])
         _this.stages[_this.stage].objects.splice(i,1);
     }
@@ -970,15 +998,15 @@ function _sjs(){
   function testCollisionBetween(e, a, b){
     if(a == undefined || b == undefined || e == undefined)return;
     if(a.type == undefined || b.type == undefined || a == b)return;
-    if(e.bType == a.type && e.aType == b.type && e.bType !== e.aType)
+    if(e.bType == a.type &amp;&amp; e.aType == b.type &amp;&amp; e.bType !== e.aType)
       testCollisionBetween(e,b,a);
 
-    if(e.aType == a.type && e.bType == b.type ){
+    if(e.aType == a.type &amp;&amp; e.bType == b.type ){
       if( _this.testCollision(a, b) ){
-        if((e.per == undefined || e.per < _this.getOverlapRatio(a,b)) &&
+        if((e.per == undefined || e.per &lt; _this.getOverlapRatio(a,b)) &amp;&amp;
            e.stages.indexOf(_this.stage)!=-1)
         {
-          if(inArray([a,b],collided) == -1 &&
+          if(inArray([a,b],collided) == -1 &amp;&amp;
              inArray([b,a],collided) == -1){
             e.handler(a,b);
             //collided.push([a,b]);
@@ -996,21 +1024,21 @@ function _sjs(){
   this.testCollision = function(a, b){
 
     return !(
-          ((a.getY() + a.getHeight()) <= (b.getY())) ||
+          ((a.getY() + a.getHeight()) &lt;= (b.getY())) ||
           (a.getY() >= (b.getY() + b.getHeight())) ||
-          ((a.getX() + a.getWidth()) <= b.getX()) ||
+          ((a.getX() + a.getWidth()) &lt;= b.getX()) ||
           (a.getX() >= (b.getX() + b.getWidth()))
     );  
   }
    
   function inArray(v,a){
-    for(var i=0;i<a.length;i++)
-      if(a[i][0] == v[0] && a[i][1] == v[1])return i;
+    for(var i=0;i&lt;a.length;i++)
+      if(a[i][0] == v[0] &amp;&amp; a[i][1] == v[1])return i;
     return -1;
   }
 
   this.removeFromArray = function(a, o){
-    for(var i=0;i<a.length;i++){
+    for(var i=0;i&lt;a.length;i++){
       if(a[i] == o){
         a.splice(i,1);
         i--;
@@ -1047,3 +1075,26 @@ var DOWN_KEY  = 40;
 var LEFT_KEY  = 37;
 var RIGHT_KEY = 39;
 var SPACE_KEY = 32;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-sjs.html">sjs</a></li></ul><h3>Classes</h3><ul><li><a href="module-sjs.Base.html">Base</a></li><li><a href="module-sjs.Button.html">Button</a></li><li><a href="module-sjs.Image.html">Image</a></li><li><a href="module-sjs.Movable.html">Movable</a></li><li><a href="module-sjs.Text.html">Text</a></li></ul><h3>Global</h3><ul><li><a href="global.html#sjs">sjs</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Thu Apr 23 2015 19:39:31 GMT-0600 (MDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
