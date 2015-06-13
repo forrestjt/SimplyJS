@@ -8,6 +8,12 @@
  * Date: 2014-05-07
  */
 
+//
+// Save Levels
+// Load Levels
+// Love levels
+//
+
 /**
  * @module sjs
  */
@@ -564,6 +570,9 @@ function _sjs(){
       if(height == undefined && width == undefined){
         w = this.getWidth(); h = this.getHeight();
       }
+      // save src in case object is serialized
+      this.src = src;
+
       if(this.node)t.removeChild(this.node);
       newnode = new Image();
       newnode.src = src;
@@ -616,10 +625,37 @@ function _sjs(){
       else
         this.faceLeft();
     }
+
+
+    // Manualy set Class type
+    this.classType = 'Image';
+
+    // Set here so that the deserializer can set the src if need be
     this.src = src;
 
+    // Serialization for saving levels
+    var serializeAttrs = ['x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
+
+    this.serialize = function(){
+      var obj = {};
+      for(var i = 0; i < serializeAttrs.length;i++) {
+        obj[serializeAttrs[i]] = this[serializeAttrs[i]];
+      }
+      return obj;
+    }
+
+    // Deserialize if object is passed (stringified or otherwise)
+    if(typeof src === 'string' && src[0] === '{') {
+      src = JSON.parse(src);
+    }
+    if(typeof src === 'object'){
+      for(var i = 0; i < serializeAttrs.length;i++) {
+        this[serializeAttrs[i]] = src[serializeAttrs[i]];
+      }
+    }
+
     this.node = new Image();
-    this.node.src = src;
+    this.node.src = this.src;
     this.node.style.position = "absolute";
     this.node.ondragstart=function(){return false;};
     if(w && h) {
@@ -832,6 +868,26 @@ function _sjs(){
     return nobj;
     /*return {type: o.type, x: o.x, y: o.y, getWidth:function(){return o.width;},getHeight:function(){return o.height;},show:function(){},hide:function(){},update:function(){},offset:function(x,y){if(x){this.x+=x;}if(y){this.y+=y;}},move:function(){}};*/
   }
+
+  this.saveImageArray = function(array){
+    var serializedImages = [];
+    for(var i in array){
+      if(array[i].classType === 'Image'){
+        serializedImages.push(array[i].serialize());
+      }
+    }
+    return JSON.stringify(serializedImages);
+  };
+
+  this.loadImageArray = function(str){
+    var array = JSON.parse(str);
+    if(!(array instanceof Array))return console.log("loadImageArray(): Input error");
+    for(var i in array){
+      if(array[i].classType === 'Image'){
+        new _this.Image(array[i]);
+      }
+    }
+  };
 
   addCollisionEvent = function(e){
     for(var i=0;i<collisionEvents.length;i++){
