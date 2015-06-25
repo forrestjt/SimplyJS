@@ -1,50 +1,30 @@
 /*
- * SimplyJS JavaScript Library v1.0.1
+ * SimplyJS JavaScript Library v1.0
  *
- * Copyright(c) 2014 Simply Coding
+ * Copyright 2014 Simply Coding
  * https://www.simplycoding.org
  * Released under the MIT license
  *
  * Date: 2014-05-07
  */
 
-//
-// Save Levels
-// Load Levels
-// Love levels
-//
-
-/**
- * @module sjs
- */
 function _sjs(){
   var t;
   this.stages = [];
   this.stage = '';
-  this.fullscreen = 0;
+
   this.mouse = { };
   this.gx = 0;
   this.gy = 0;
-  this.scroll;
+  this.scroll
   var collisionEvents = [], collided = [];
   var key_state = {}, key_events = {};
   var _this = this;
-
-  /** 
-   * @func open
-   * @desc Sets an element to be the root element for all
-   * sjs objects.
-   * @static
-   * @param {string} target - The id of the target element
-   * @param {number} w - (optional) The width to set the element to.
-   * Defaults to 500.
-   * @param {number} h - (optional) The height to set the element to.
-   * Defaults to 400.
-   */
   this.open = function(target, w, h){
     if(w == undefined && h == undefined){w=500;h=400;}
     if(w != undefined && h == undefined)h=w;
     if(w == 0){
+      getViewportSize
       w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) 
       h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     }
@@ -61,62 +41,38 @@ function _sjs(){
     t.style.width    = w+"px";
     t.style.height   = h+"px";
     t.style.position = "relative";
-    t.style.overflow = "hidden";
     t.x = t.getBoundingClientRect().top;
     t.y = t.getBoundingClientRect().left;
 
-    /** @var {sjs.Base} module:sjs.top_screen */
-    this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-50,
-                             width: w, height: 50});
+    this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-1,
+                             width: w, height: 1});
     this.top_screen.getWidth = vw;
 
-    /** @var {sjs.Base} module:sjs.bottom_screen */
     this.bottom_screen = this.MakeObj({type: "bottom_screen", x:0, y:h,
-                                width: w, height: 50});
+                                width: w, height: 1});
     this.bottom_screen.getWidth = vw;
     
-    /** @var {sjs.Base} module:sjs.left_screen */
     this.left_screen = this.MakeObj({type: "left_screen", x:-1, y:0,
                               width: 1, height: h});
     this.left_screen.getHeight = vh;
-
-    /** @var {sjs.Base} module:sjs.right_screen */
+    
     this.right_screen = this.MakeObj({type: "right_screen", x:w, y:0,
                                width: 1, height: h});
     this.right_screen.getHeight = vh;
-    this.right_screen.getX = function(){return this.offset_x+this.x;}
-    this.right_screen.offset = function(x,y){this.offset_x = x;this.offset_y=y;}
-    this.right_screen.update = function(){this.x=vw();}
-    this.right_screen.offset_x=0;
-    this.right_screen.offset_y=0;
-
-    /** @var {sjs.Base} module:sjs.bottom_screen */
-    this.bottom_screen.getWidth = vw;
-    this.bottom_screen.getY = function(){return this.offset_y + this.y;}
-    this.bottom_screen.offset = function(x,y){this.offset_x=x;this.offset_y=y;}
-    this.bottom_screen.update = function(){this.y=vh();}
-    this.bottom_screen.offset_y=0;
-    this.bottom_screen.offset_x=0;
+//    this.right_screen.update = function(){this.x=vw();}
 
     this.mouse = this.MakeObj({width:1,height:1});
-    this.mouse.x = undefined;
-    this.mouse.y = undefined;
 
     this.makeStage("default");
 
     setInterval(function(){_this.stages[_this.stage].update();},40);
     window.onkeydown = function(e){
       key_state[e.keyCode] = true;
-      if(e.keyCode == UP_KEY   || e.keyCode == DOWN_KEY ||
-         e.keyCode == LEFT_KEY || e.keyCode == RIGHT_KEY)e.preventDefault();
     }
     window.onkeyup = function(e){
       key_state[e.keyCode] = false;
-      if(_this.stages[_this.stage].keyUp){
+      if(_this.stages[_this.stage].keyUp!=undefined)
         _this.stages[_this.stage].keyUp();
-        e.preventDefault();
-      }
-
     }
     t.onmousemove = function(e){
       _this.mouse.x = e.clientX - t.x;
@@ -133,41 +89,20 @@ function _sjs(){
     t.addEventListener("touchend", function(e){
       sjs.mouse.x = e.changedTouches[0].pageX;
       sjs.mouse.y = e.changedTouches[0].pageY;
+      //alert(sjs.mouse.x+" "+sjs.mouse.y);
       if(_this.stages[_this.stage].touchEnd){
         _this.stages[_this.stage].touchEnd();   
-        e.preventDefault();
+        //e.preventDefault();
       }
     });
   }
-
-  /**
-   * @class module:sjs.Base
-   * @classdesc A class that contains basic functionality common to
-   * many sjs components.
-   */
   this.Base = function(){
-
-
-    /**
-     * @func module:sjs.Base#offset
-     * @desc Moves the Object to a new position relative to
-     * its current position.
-     * @param {number} x - The amount to shift in the x(horizontal) direction.
-     * @param {number} y - The amount to shift in the y(vertical) direction.
-     */
     this.offset = function(x,y){
       this.x+=x;this.y+=y;
       this.node.style.left=Math.round(this.x)+(this.fixed?0:_this.gx)+"px";
       this.node.style.top =Math.round(this.y)+(this.fixed?0:_this.gy)+"px";
       return this;
     }
-
-    /**
-     * @func module:sjs.Base#moveTo
-     * @desc Sets the object's position x and y coordinates.
-     * @param {number} x - the new x coordinate
-     * @param {number} y - the new y coordinate
-     */
     this.moveTo = function(x,y){
       if(x==undefined && y==undefined){x=this.x;y=this.y;}
       if(y==undefined && x!=undefined){
@@ -179,273 +114,82 @@ function _sjs(){
       this.node.style.top =Math.round(y)+(this.fixed?0:_this.gy)+"px";
       return this;
     }
-
-    /**
-     * @func module:sjs.Base#setWidth
-     * @desc Sets the object's width.
-     * @param {number} w - the new width in pixels
-     */
     this.setWidth = function(w){if(w){this.node.style.width = w+"px";}return this;}
-    
-    /**
-     * @func module:sjs.Base#setHeight
-     * @desc Sets the object's Height.
-     * @param {number} h - the new height in pixels
-     */
     this.setHeight = function(h){if(h){this.node.style.height = h+"px";}return this;}
-
-    /**
-     * @func module:sjs.Base#scaleSize
-     * @desc Scales the object by multiplying the width and the height. If the last paramter is omitted, then both the width and height are scaled. (ex. scaleSize(5) is the same as scaleSize(5, 5))
-     * @param {number} a - the amount to scale the width in pixels
-     * @param {number} b - the amount to scale the height in pixels (optional)
-     */
-    this.scaleSize = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.setSize(this.getWidth()*a,this.getHeight()*b);}
-
-    /**
-     * @func module:sjs.Base#grow
-     * @desc Adds a fixed amount to the width and height of the object. If the last paramter is omitted then both the width and the height are increased by the passed amount. (ex. grow(5, 5) is the same as grow(5))
-     * @param {number} a - the amount to increase the height in pixels
-     * @param {number} b - the amount to increase the width in pixels
-     */
-    this.grow = function(a,b){if(a!=undefined&&b==undefined){b=a;}var c = this.getCenter(); this.setSize(this.getWidth()+a,this.getHeight()+b); this.centerAt(c.x,c.y); }
-
- 
-    /**
-     * @func module:sjs.Base#getX
-     * @desc Gets the object's x position
-     * @returns {number} the object's x coordinate
-     */
     this.getX = function(){if(this.fixed)return this.x-_this.gx; return this.x;}
-
-    /**
-     * @func module:sjs.Base#getY
-     * @desc Gets the object's y position
-     * @returns {number} the object's y coordinate
-     */
     this.getY = function(){if(this.fixed)return this.y-_this.gy; return this.y;}
-
-    /**
-     * @func module:sjs.Base#top
-     * @desc Moves the object to the top of the screen (sets the y coordinate to 0).
-     */ 
     this.top = function(){this.y=0;return this;}
-
-    /**
-     * @func module:sjs.Base#top
-     * @desc Aligns the object to the left side of the screen (sets the x coordinate to 0).
-     */ 
     this.left = function(){this.x=0;return this;}
-
-    /**
-     * @func module:sjs.Base#right
-     * @desc Aligns the object flush against the right side of the screen.
-     */ 
     this.right = function(){
       this.x = (t.width - this.getWidth());
       this.node.style.left = Math.round(this.x) + "px";
       return this;
     }
 
-    /**
-     * @func module:sjs.Base#bottom
-     * @desc Aligns the object flush against the bottom the screen.
-     */ 
     this.bottom = function(){
       this.y = (t.height - this.getHeight());
       this.node.style.top = Math.round(this.y) + "px";
       return this;
     }
-
-    /**
-     * @func module:sjs.Base#centerV
-     * @desc Centers the object vertically.
-     */
     this.centerV = function(){
       this.y = ((t.height/2) - (this.getHeight()/2));
       this.node.style.top = this.y + "px";
       return this;
     }
-
-    /**
-     * @func module:sjs.Base#centerH
-     * @desc Centers the object horizontally.
-     */
     this.centerH = function(){
       this.x = ((t.width/2) - (this.getWidth()/2));
       this.node.style.left = this.x + "px";
       return this;
     }
-
-    /**
-     * @func module:sjs.Base#getCenter
-     * @desc Gets the center coordinates of the object.
-     * @returns {Object} Object with an x and y attribute with the center of the object
-     */
     this.getCenter = function(){
       return {x:this.x+(this.getWidth()/2), y:this.y+(this.getHeight()/2) };
     }
-
-    /**
-     * @func module:sjs.Base#isLeftOf
-     * @desc Determines whether or not an object is to the left of another object.
-     * @param a {Object} Object that is or derives from sjs.Base
-     * @returns {boolean} true if the object is left of the passed object
-     */
     this.isLeftOf = function(a){
-      return (this.getCenter().x < a.getCenter().x);
+      return ((this.getCenter().x - a.getCenter().x) < 0);
     }
-
-    /**
-     * @func module:sjs.Base#isRightOf
-     * @desc Determines whether or not an object is to the right of another object.
-     * @param a {Object} Object that is or derives from sjs.Base
-     * @returns {boolean} true if the object is left of the passed object
-     */
     this.isRightOf = function(a){
-      return (this.getCenter().x > a.getCenter().x);
+      return ((this.getCenter().x - a.getCenter().x) > 0);
     }
-
-    /**
-     * @func module:sjs.Base#isTopOf
-     * @desc Determines whether or not an object is above of another object.
-     * @param a {Object} Object that is or derives from sjs.Base
-     * @returns {boolean} true if the object is above of the passed object
-     */
     this.isTopOf = function(a){
-      return (this.getCenter().y < a.getCenter().y);
+      return ((this.getCenter().y - a.getCenter().y) < 0);
     }
-
-    /**
-     * @func module:sjs.Base#isBottomOf
-     * @desc Determines whether or not an object is below of another object.
-     * @param a {Object} Object that is or derives from sjs.Base
-     * @returns {boolean} true if the object is below of the passed object
-     */
     this.isBottomOf = function(a){
-      return (this.getCenter().y > a.getCenter().y);
+      return ((this.getCenter().y - a.getCenter().y) > 0);
     }
-
-    this.isAboveOf = function(a,p){
-      /*if(p==undefined)p=.5;
-      var h = this.getY() + this.getHeight();
-      return ((Math.abs(h - a.getY()) / this.getHeight())>p);
-      */
-      var d = _this.getDeltas(a,this);
-      return (d.x > d.y);
-    }
-
-    /**
-     * @func module:sjs.Base#moveLeftOf
-     * @desc Moves an object exactly to the left of another object.
-     * @param a {Object} Object to move to the left of that is or derives from sjs.Base
-     */
     this.moveLeftOf = function(a){
-      this.x=a.getX()-this.getWidth();
+      c=a.getCenter();
+      this.x=(c.x-a.getWidth()/2)-this.getWidth();
     }
-
-    /**
-     * @func module:sjs.Base#moveRightOf
-     * @desc Moves an object exactly to the right of another object.
-     * @param a {Object} Object to move to the right of that is or derives from sjs.Base
-     */
     this.moveRightOf = function(a){
-      this.x=a.getX()+a.getWidth();
+      c=a.getCenter();
+      this.x=(c.x+a.getWidth()/2);
     } 
-
-    /**
-     * @func module:sjs.Base#moveTopOf
-     * @desc Moves an object exactly above of another object.
-     * @param a {Object} Object to move above of that is or derives from sjs.Base
-     */
     this.moveTopOf = function(a){
-      this.y=a.getY()-this.getHeight();
+      c=a.getCenter();
+      this.y=(c.y-a.getHeight()/2)-this.getHeight();
     }
-
-    /**
-     * @func module:sjs.Base#moveBottomOf
-     * @desc Moves an object exactly below of another object.
-     * @param a {Object} Object to move below of that is or derives from sjs.Base
-     */ 
     this.moveBottomOf = function(a){
-      this.y=a.getY()+a.getHeight();
+      c=a.getCenter();
+      this.y=(c.y+a.getHeight()/2);
     }
-
-    /**
-     * @func module:sjs.Base#centerAt
-     * @desc Centers the object at a specified x and y coordinate.
-     * @param nx {number} x coordinate to center the object around
-     * @param ny {number} y coordinate to cetner the object around
-     */
     this.centerAt = function(nx, ny){
       this.x = nx-this.getWidth()/2;
       this.y = ny-this.getHeight()/2;
     }
      
-    /**
-     * @func module:sjs.Base#center
-     * @desc Centers an object vertically and horizontally. Is chainable.
-     */ 
     this.center = function(){this.centerV();this.centerH();return this;};
-
-    /**
-     * @func module:sjs.Base#getWidth
-     * @desc Gets the width of the object.
-     * @returns {number} the current width of the object
-     */
     this.getWidth  = function(){return this.node.offsetWidth;};
-
-    /**
-     * @func module:sjs.Base#getHeight
-     * @desc Gets the height of the object.
-     * @returns {number} the current height of the object
-     */
     this.getHeight = function(){return this.node.offsetHeight;};
-
-    /**
-     * @func module:sjs.Base#setSize
-     * @desc Sets the size of the object. If only the first paramter is passed, then both the height and width are set to that value.
-     * @params w {number} the value to set the width to
-     * @params h {number} the value to set the height to
-     */
     this.setSize = function(w, h){if(w != undefined && h == undefined)h=w;  this.node.width=w; this.node.height=h;}
-
-    /**
-     * @func module:sjs.Base#hide
-     * @desc Hides the object. Is Chainable.
-     */
     this.hide = function(){this.node.style.display="none";return this;};
-
-    /**
-     * @func module:sjs.Base#show
-     * @desc Shows the object. Is Chainable.
-     */
     this.show = function(){this.node.style.display="inline";return this;};
-
-    /**
-     * @func module:sjs.Base#destroy
-     * @desc Removes the object from the stage, and removes the node from the DOM.
-     */
-    this.destroy = function(){removeFromStage(this);if(this.node && this.node.parentNode == t)t.removeChild(this.node);};
-
-
-    /**
-     * @func module:sjs.Base#makeGlobal
-     * @desc Removes the object from the stage so it is always visible. Is Chainable.
-     */
-    this.makeGlobal = function(){_this.removeFromStage(this);this.node.style.zIndex="100"; return this;}
+    this.destroy = function(){removeFromStage(this);if(this.node)t.removeChild(this.node);};
 
     this.x = 0;
     this.y = 0;
   };
   baseObj = new this.Base();
 
-  /**
-   * @class module:sjs.Movable
-   * @classdesc Contains functionality related to moving an object
-   * with a velocity and friction attributes
-   * @extends module:sjs.Base
-   */
   this.Moveable = function(){
 
     this.update = function(){
@@ -454,14 +198,16 @@ function _sjs(){
       if(Math.abs(this.sy) < 0.5)this.sy=0;
       this.sx -= this.friction*this.sx;
       this.sy -= this.friction*this.sy;
+      
+      if(this.isHeld && this.onHold != undefined){this.onHold();}
 
       if(this.followx_obj && this.followx_last){
-        this.x += (this.followx_obj.getX() - this.followx_last);
-        this.followx_last = this.followx_obj.getX();
+        this.x += (this.followx_obj.x - this.followx_last);
+        this.followx_last = this.followx_obj.x;
       }
       if(this.followy_obj && this.followy_last){
-        this.y += (this.followy_obj.getY() - this.followy_last);
-        this.followy_last = this.followy_obj.getY();
+        this.y += (this.followy_obj.y - this.followy_last);
+        this.followy_last = this.followy_obj.y;
       }
 
       if(this.noBounds==undefined){
@@ -475,13 +221,11 @@ function _sjs(){
       if(this.ay != undefined)this.sy += this.ay;
     }
     this.stop      = function(k){this.sx=0;this.sy=0;return this;}
-    this.pushUp    = function(k){this.sy-=(this.accel*this.topSpeed*(k?k:1));return this;}
-    this.pushDown  = function(k){this.sy+=(this.accel*this.topSpeed*(k?k:1));return this;}
-    this.pushLeft  = function(k){this.sx-=(this.accel*this.topSpeed*(k?k:1));return this;}
-    this.pushRight = function(k){this.sx+=(this.accel*this.topSpeed*(k?k:1));return this;}
-    this.scaleSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx*=a;this.sy*=b;}
-    this.adjustSpeed = function(a,b){if(a!=undefined&&b==undefined){b=a;}this.sx+=a;this.sy+=b;}
-    this.getClamp = function(){return {x: vw()-this.getWidth(),y:vh()-this.getHeight()};}
+    this.pushUp    = function(k){this.sy-=(this.accel*this.maxSpeed*(k?k:1));return this;}
+    this.pushDown  = function(k){this.sy+=(this.accel*this.maxSpeed*(k?k:1));return this;}
+    this.pushLeft  = function(k){this.sx-=(this.accel*this.maxSpeed*(k?k:1));return this;}
+    this.pushRight = function(k){this.sx+=(this.accel*this.maxSpeed*(k?k:1));return this;}
+
 
     this.bounce = function(){this.noBounds=true;
       if(this.type==undefined)this.type="object";
@@ -491,6 +235,36 @@ function _sjs(){
       _this.onHit(this.type, "bottom_screen", _this.bounceOff);
       return this;
     }
+
+
+
+
+    this.setCourse = function(path){
+      var i = 0;
+      if(path.length > 0)
+        this.slide(path[0].dx, path[0].dy, path[0].duration, slideCallback.bind(this))
+      function slideCallback(){
+        if(++i < path.length)
+          this.slide(path[i].dx, path[i].dy, path[i].duration, slideCallback.bind(this));
+      }
+    };
+    this.slide = function(dx, dy, time, cb){
+      this.friction = 0;
+      var tot = 0, x0 = this.x, y0 = this.y, lastTime = null;
+      var timerId = requestAnimationFrame(updateSlide.bind(this));
+      function updateSlide(timeStamp) {
+        if(lastTime && timeStamp != lastTime){
+          tot += timeStamp - lastTime;
+          this.x = x0 + dx * (tot /(time*1000));
+          this.y = y0 + dy * (tot /(time*1000));
+          if(tot >= (time*1000))return (cb ? cb() : 0);
+        }
+        lastTime = timeStamp;
+        timerId = window.requestAnimationFrame(updateSlide.bind(this));
+      }
+    };
+
+
 
     this.followx = function(a){
       if(a.x == undefined && a.y == undefined &&
@@ -536,26 +310,18 @@ function _sjs(){
     this.onClick = function(callback){ this.node.onclick=callback; }
     this.onMouseDown = function(callback){this.node.onmousedown=callback; }
     this.onMouseUp = function(callback){ this.node.onmouseup=callback; }
-    this.setXSpeed = function(sx){if(sx!=undefined){this.sx=sx;}}
-    this.setYSpeed = function(sy){if(sy!=undefined){this.sy=sy;}}
-    this.setGravity = function(g){if(g==undefined){g=1;}this.ay=g;}
-    this.removeGravity = function(){this.ay=0;}
+    __this = this;
     this.sx = 0;
     this.sy = 0;
     this.accel = .15;
-    this.topSpeed = 10;
+    this.maxSpeed = 10;
     this.friction = .05;
   }
   this.Moveable.prototype = baseObj;
   moveableObj = new this.Moveable();
 
-  /**
-   * @class module:sjs.Image
-   * @classdesc Contains functionality for representing Objects with images.
-   * @desc Use <b>new sjs.Image()</b> to create a new instance.
-   * @extends module:sjs.Movable
-   */
-  this.Image = function(src,width,height) {
+  this.Image = function(src,width,height,radius,show) {
+  
     if(height == undefined && width != undefined){
       var w = width; var h = width;
     } else {
@@ -567,21 +333,36 @@ function _sjs(){
       } else {
         var w = width; var h = height;
       }
+    if(radius== undefined){
+      this.radius=0;
+    }else{
+      this.radius=radius;
+    }
+    if(show==undefined){
+      this.show=false;
+    }else{
+      this.show=show;
+    }
       if(height == undefined && width == undefined){
         w = this.getWidth(); h = this.getHeight();
       }
-      // save src in case object is serialized
-      this.src = src;
-
       if(this.node)t.removeChild(this.node);
+    
+
+
+
       newnode = new Image();
       newnode.src = src;
       newnode.style.position = "absolute";
+    newnode.style.borderRadius="50%";
+    newnode.style.padding=""+radius+"px";
+    newnode.onmouseover=function(){tower.onmouseover();};
+    newnode.onmouseout=function(){tower.onmouseout();};
       newnode.ondragstart=function(){return false;};
       newnode.onmousedown=this.node.onmousedown;
       newnode.onmouseup  =this.node.onmouseup;
       newnode.onclick    =this.node.onclick;
-      this.node = newnode;
+    this.node = newnode;
       if(w && h) {
         this.node.width = w; this.node.height = h;
       }
@@ -597,87 +378,166 @@ function _sjs(){
       t.appendChild(this.node);
     }
 
-    this.setHFlipImages = function(left,right){
+    this.setFlipImages = function(left,right){
       this.left_img = left;
       this.right_img = right;
-      if(this.facingLeft === undefined){
-        this.facingLeft = false;
-        this.faceLeft();
-      } else { this.setImage(this.facingLeft?this.left_img:this.right_img); }
+      this.facingLeft = true;
     }
     this.isFacingLeft = function(){return this.facingLeft;}
-    this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
-      if(!this.facingLeft && this.left_img){
+      if(!this.facingLeft){
         this.setImage(this.left_img);this.facingLeft=true;
       }
     }
     this.isFacingRight = function(){return !this.facingLeft;}
     this.faceRight = function(){
-      if((this.facingLeft || this.facingLeft == undefined) && this.right_img){
+      if(this.facingLeft || this.facingLeft == undefined ){
         this.setImage(this.right_img);
         this.facingLeft=false;
       }
     }
-    this.faceHFlip = function(){
+    this.faceFlip = function(){
       if(this.facingLeft)
         this.faceRight();
       else
         this.faceLeft();
     }
-
-
-    // Manualy set Class type
-    this.classType = 'Image';
-
-    // Set here so that the deserializer can set the src if need be
     this.src = src;
+  this.onmouseover=function(){
 
-    // Serialization for saving levels
-    var serializeAttrs = ['x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
-
-    this.serialize = function(){
-      var obj = {};
-      for(var i = 0; i < serializeAttrs.length;i++) {
-        obj[serializeAttrs[i]] = this[serializeAttrs[i]];
-      }
-      return obj;
-    }
-
-    // Deserialize if object is passed (stringified or otherwise)
-    if(typeof src === 'string' && src[0] === '{') {
-      src = JSON.parse(src);
-    }
-    if(typeof src === 'object'){
-      for(var i = 0; i < serializeAttrs.length;i++) {
-        this[serializeAttrs[i]] = src[serializeAttrs[i]];
-      }
-    }
+    this.node.style.border="2px solid black";
+  }
+  this.onmouseout=function(){
+    
+    this.node.style.border="none";
+  }
 
     this.node = new Image();
-    this.node.src = this.src;
+    this.node.src = src;
     this.node.style.position = "absolute";
     this.node.ondragstart=function(){return false;};
     if(w && h) {
       this.node.width = w; this.node.height = h;
     }
+    this.node.addEventListener("touchstart",(function(obj){ return function(e){obj.isHeld = true;} })(this) );
+    this.node.addEventListener("touchenter",(function(obj){ return function(e){alert('enter');obj.isHeld = true;} })(this) );
+    this.node.addEventListener("touchend", (function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("touchcancel",(function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("touchleave", (function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("mousedown",(function(obj){ return function(){obj.isHeld = true;} })(this));
+    this.node.addEventListener("mouseup", (function(obj){ return function(){obj.isHeld = false;} })(this));
+  this.node.addEventListener("onmouseover", (function(obj){return function(){this.node.style.border="2px solid black";}})(this));
+  this.node.addEventListener("onmouseout", (function(obj){return function(){this.node.style.border="none";}})(this));
     t.appendChild(this.node);
     _this.addToStage(this);
   };
+  
+    this.Image = function(src,width,height) {
+  
+    if(height == undefined && width != undefined){
+      var w = width; var h = width;
+    } else {
+      var w = width; var h = height;
+    }
+    this.setImage = function(src, width, height){
+      if(height == undefined && width != undefined){
+        var w = width; var h = width;
+      } else {
+        var w = width; var h = height;
+      }
+      if(height == undefined && width == undefined){
+        w = this.getWidth(); h = this.getHeight();
+      }
+      if(this.node)t.removeChild(this.node);
+      newnode = new Image();
+      newnode.src = src;
+      newnode.style.position = "absolute";
+      newnode.ondragstart=function(){return false;};
+      newnode.onmousedown=this.node.onmousedown;
+      newnode.onmouseup  =this.node.onmouseup;
+      newnode.onclick    =this.node.onclick;
+    this.node = newnode;
+      if(w && h) {
+        this.node.width = w; this.node.height = h;
+      }
+      this.offset(0,0);
+      t.appendChild(this.node);
+    }
+
+    this.copyImage = function(img){
+      this.destroy();
+      this.node = img.node.cloneNode(true);
+      this.show();
+      this.offset(0,0);
+      t.appendChild(this.node);
+    }
+
+    this.setFlipImages = function(left,right,up,down){
+      if(up == undefined || down == undefined){
+        this.left_img = left;
+        this.right_img = right;
+      }else{
+        this.left_img = left;
+        this.right_img = right;
+        this.up_img = up;
+        this.down_img = down;
+      }
+      
+    }
+    this.faceLeft = function(){
+        this.setImage(this.left_img);
+    }
+    this.faceRight = function(){
+        this.setImage(this.right_img);
+    }
+    this.faceUp = function(){
+        this.setImage(this.up_img);
+    }
+    this.faceDown = function(){
+        this.setImage(this.down_img);
+    }
+
+    this.src = src;
+  this.onmouseover=function(){
+
+    this.node.style.border="2px solid black";
+  }
+  this.onmouseout=function(){
+    
+    this.node.style.border="none";
+  }
+
+    this.node = new Image();
+    this.node.src = src;
+    this.node.style.position = "absolute";
+    this.node.ondragstart=function(){return false;};
+    if(w && h) {
+      this.node.width = w; this.node.height = h;
+    }
+    this.node.addEventListener("touchstart",(function(obj){ return function(e){obj.isHeld = true;} })(this) );
+    this.node.addEventListener("touchenter",(function(obj){ return function(e){alert('enter');obj.isHeld = true;} })(this) );
+    this.node.addEventListener("touchend", (function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("touchcancel",(function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("touchleave", (function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("mousedown",(function(obj){ return function(){obj.isHeld = true;} })(this));
+    this.node.addEventListener("mouseup", (function(obj){ return function(){obj.isHeld = false;} })(this));
+  this.node.addEventListener("onmouseover", (function(obj){return function(){this.node.style.border="2px solid black";}})(this));
+  this.node.addEventListener("onmouseout", (function(obj){return function(){this.node.style.border="none";}})(this));
+    t.appendChild(this.node);
+    _this.addToStage(this);
+  };
+  
   this.Image.prototype = moveableObj;
 
-  /**
-  * @class module:sjs.Button
-  * @classdesc A simple wrapper for &lt;button&gt; DOM elements.
-  * @extends module:sjs.Base
-  */
-  this.Button = function(txt, callback, size, color) {
+  this.Button = function(txt, callback, size, color, font) {
     if(size == undefined)size=18;
     if(color == undefined)color="black";
+    if(font == undefined)font="Arial";
     this.setText = function(txt){this.node.innerHTML = txt;}
     this.node = document.createElement('button');
     this.node.style.position = "absolute";
     this.node.innerHTML = txt;
+    this.node.style.fontFamily=font;
     this.node.onclick = callback;
     this.node.style.fontSize=size+"px";
     this.node.style.color=color;
@@ -688,11 +548,6 @@ function _sjs(){
   }
   this.Button.prototype = baseObj;
 
-  /**
-  * @class module:sjs.Text
-  * @classdesc A simple wrapper for &lt;span&gt; DOM elements.
-  * @extends module:sjs.Base
-  */
   this.Text = function(txt, size, color, font){
     if(size == undefined)size=18;
     if(color == undefined)color="black";
@@ -711,20 +566,15 @@ function _sjs(){
     _this.addToStage(this);
   }
   this.Text.prototype = baseObj;
-  this.addScreens = function(){
-    this.stages[this.stage].objects.push(this.top_screen);
-    this.stages[this.stage].objects.push(this.bottom_screen);
-    this.stages[this.stage].objects.push(this.left_screen);
-    this.stages[this.stage].objects.push(this.right_screen);
-  }
 
   this.makeStage = function(s){
     if(this.stages[s] == undefined){
       this.stages[s] = {objects: [], update: this.updateStage};
+      this.stages[s].objects.push(this.top_screen);
+      this.stages[s].objects.push(this.bottom_screen);
+      this.stages[s].objects.push(this.left_screen);
+      this.stages[s].objects.push(this.right_screen);
       key_events[s] = {};
-      this.setStage(s);
-      this.addScreens();
-    } else {
       this.setStage(s);
     }
   }
@@ -736,7 +586,7 @@ function _sjs(){
       for(var i=0;i<this.stages[s].objects.length;i++)
         this.stages[s].objects[i].show();
       this.stage = s;
-    } else { this.makeStage(s); }
+    }
   }
 
   this.clearStage = function(){
@@ -762,8 +612,6 @@ function _sjs(){
     if(_this.scroll){
       _this.gx = _this.clamp((t.width/2) - (_this.scroll.obj.x+(_this.scroll.obj.getWidth()/2)), -(_this.scroll.area.getWidth()-t.width),0);
       _this.bottom_screen.getWidth=function(){return _this.scroll.area.getWidth();}
-
-      _this.gy = _this.clamp((t.height/2) - (_this.scroll.obj.y+(_this.scroll.obj.getHeight()/2)), -(_this.scroll.area.getHeight()-t.height),0);
       //_this.gy = (t.height/2) - (_this.scroll.obj.y+(_this.scroll.obj.getHeight()/2));
     }
   }
@@ -786,7 +634,6 @@ function _sjs(){
         i--;
       }
     }
-    if(type==undefined)_this.addScreens();
   }
   this.addKeysFromStage = function(stage){
     for(k in key_events[stage])
@@ -824,14 +671,13 @@ function _sjs(){
       if(a.isLeftOf(b))a.moveLeftOf(b);
       if(a.isRightOf(b))a.moveRightOf(b);
       a.sx *= -1;
-      a.sx += (b.sx?b.sx:0)/4;
-      if(a.facingLeft != undefined)a.faceHFlip();
+      a.sx += (b.sx?b.sx:0)/8;
     }
     if(d.x > d.y){
       if(a.isTopOf(b))a.moveTopOf(b);
       if(a.isBottomOf(b))a.moveBottomOf(b);
       a.sy *= -1;
-      a.sy += (b.sy?b.sy:0)/4;
+      a.sy += (b.sy?b.sy:0)/8;
     }
     /*if(d.x == d.y){
       a.sx *= -1; a.sy *= -1;
@@ -844,11 +690,11 @@ function _sjs(){
     var d = sjs.getDeltas(a,b);
     if(d.x >= d.y){
       if(a.isTopOf(b))a.moveTopOf(b);
-      else if(a.isBottomOf(b))a.moveBottomOf(b);
+      if(a.isBottomOf(b))a.moveBottomOf(b);
       a.sy=0;
     } else {
       if(a.isLeftOf(b))a.moveLeftOf(b);
-      else if(a.isRightOf(b))a.moveRightOf(b);
+      if(a.isRightOf(b))a.moveRightOf(b);
       a.sx=0;
     }
   }
@@ -869,26 +715,6 @@ function _sjs(){
     /*return {type: o.type, x: o.x, y: o.y, getWidth:function(){return o.width;},getHeight:function(){return o.height;},show:function(){},hide:function(){},update:function(){},offset:function(x,y){if(x){this.x+=x;}if(y){this.y+=y;}},move:function(){}};*/
   }
 
-  this.saveImageArray = function(array){
-    var serializedImages = [];
-    for(var i in array){
-      if(array[i].classType === 'Image'){
-        serializedImages.push(array[i].serialize());
-      }
-    }
-    return JSON.stringify(serializedImages);
-  };
-
-  this.loadImageArray = function(str){
-    var array = JSON.parse(str);
-    if(!(array instanceof Array))return console.log("loadImageArray(): Input error");
-    for(var i in array){
-      if(array[i].classType === 'Image'){
-        new _this.Image(array[i]);
-      }
-    }
-  };
-
   addCollisionEvent = function(e){
     for(var i=0;i<collisionEvents.length;i++){
       if(   (collisionEvents[i].aType == e.aType
@@ -901,44 +727,27 @@ function _sjs(){
     
   }
   
-  /**
-  * @func module:sjs.onHit
-  * @desc Creates a new handler for when two objects
-  * with the specified types collide. The types can
-  * be the same.
-  * @param {string} a - An object type for this rule
-  * @param {string} a - Another object type for this rule
-  * @param {function} callback - A callback function of the form
-  * function(obj1, obj2){} that will be passed the two objects
-  * that have collided.
-  * @param {number} percent - A decimal number between 0 and 1
-  * that specifies how much of the images must
-  * overlap before considering them "collided".
-  * 0% means any overlap will trigger a collision,
-  * 100% means the objects must be completely overlaped to to
-  * trigger a collision.
-  */
-  this.onHit = function(a,b,callback,percent,stages){
-    if(stages==undefined){stages=[this.stage];}
-    if(typeof(stages)=="string")stages = [stages];
+
+  this.onHit = function(a,b,callback,percent){
+    
     if(typeof(a) == "object" && typeof(b) == "object") {
       for(var i=0;i<b.length;i++)
         for(var j=0;j<a.length;j++)
-        addCollisionEvent({handler: callback, aType: a[j], bType: b[i], flag: true, per:percent, stages: stages});
+        addCollisionEvent({handler: callback, aType: a[j], bType: b[i], flag: true, per:percent});
 
     }
     if(typeof(a) == "object" && typeof(b) == "string") {
       for(var i=0;i<a.length;i++)
-        addCollisionEvent({handler: callback, aType: a[i], bType: b, flag: true, per:percent, stages: stages});
+        addCollisionEvent({handler: callback, aType: a[i], bType: b, flag: true, per:percent});
       
     }
     if(typeof(a) == "string" && typeof(b) == "object") {
       for(var i=0;i<b.length;i++)
-        addCollisionEvent({handler: callback, aType: a, bType: b[i], flag: true, per:percent, stages: stages});
+        addCollisionEvent({handler: callback, aType: a, bType: b[i], flag: true, per:percent});
       
     }
     if(typeof(a) == "string" && typeof(b) == "string") {
-    addCollisionEvent({handler: callback, aType: a, bType: b, flag: true, per:percent, stages: stages});
+    addCollisionEvent({handler: callback, aType: a, bType: b, flag: true, per:percent});
    //  collisionEvents.push({handler: callback, aType: a, bType: b, flag: true, per:percent});
 
     }
@@ -978,9 +787,6 @@ function _sjs(){
   this.scrollable = function(follow, area){
     this.scroll = {obj: follow, area: area};
   }
-  this.addCopyOfArray = function(a){
-    for(var i=0;i<a.length;i++)this.addCopyToStage(a[i]);
-  }
 
   this.addCopyToStage = function(o){
     var nImg = new _this.Image(o.src);   
@@ -990,15 +796,16 @@ function _sjs(){
     nImg.node.height = o.node.height;
     nImg.sx = o.sx;
     nImg.sy = o.sy;
-    nImg.left_img   = o.left_img;
-    nImg.right_img  = o.right_img;
+    nImg.ay = o.ay;
+    nImg.friction = o.friction;
+    nImg.left_img = o.left_img;
+    nImg.right_img = o.right_img;
     nImg.facingLeft = o.facingLeft;
-    nImg.noBounds   = o.noBounds;
 
     return nImg;
   }
 
-  this.getWidth  = function(){return t.width;}
+  this.getWidth = function(){return t.width;}
   this.getHeight = function(){return t.height;}
 
  // "Private" functions
@@ -1026,13 +833,12 @@ function _sjs(){
   function testCollisionBetween(e, a, b){
     if(a == undefined || b == undefined || e == undefined)return;
     if(a.type == undefined || b.type == undefined || a == b)return;
-    if(e.bType == a.type && e.aType == b.type && e.bType !== e.aType)
+    if(e.bType == a.type && e.aType == b.type )
       testCollisionBetween(e,b,a);
 
     if(e.aType == a.type && e.bType == b.type ){
       if( _this.testCollision(a, b) ){
-        if((e.per == undefined || e.per < _this.getOverlapRatio(a,b)) &&
-           e.stages.indexOf(_this.stage)!=-1)
+        if(e.per == undefined || e.per < _this.getOverlapRatio(a,b))
         {
           if(inArray([a,b],collided) == -1 &&
              inArray([b,a],collided) == -1){
@@ -1095,11 +901,14 @@ function _sjs(){
   }
 
 }
-/** @global */
 var sjs = new _sjs();
 
+var W_KEY     = 87;
+var D_KEY     = 68;
+var S_KEY     = 83;
+var A_KEY     = 65;
 var UP_KEY    = 38;
 var DOWN_KEY  = 40;
 var LEFT_KEY  = 37;
 var RIGHT_KEY = 39;
-var SPACE_KEY = 32;
+
