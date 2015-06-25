@@ -1,18 +1,12 @@
 /*
- * SimplyJS JavaScript Library v1.0.1
+ * SimplyJS JavaScript Library v1.0.2
  *
- * Copyright(c) 2014 Simply Coding
+ * Copyright(c) 2015 Simply Coding
  * https://www.simplycoding.org
  * Released under the MIT license
  *
- * Date: 2014-05-07
+ * Date: 2015-06-25
  */
-
-//
-// Save Levels
-// Load Levels
-// Love levels
-//
 
 /**
  * @module sjs
@@ -66,13 +60,13 @@ function _sjs(){
     t.y = t.getBoundingClientRect().left;
 
     /** @var {sjs.Base} module:sjs.top_screen */
-    this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-50,
-                             width: w, height: 50});
+    this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-1,
+                             width: w, height: 1});
     this.top_screen.getWidth = vw;
 
     /** @var {sjs.Base} module:sjs.bottom_screen */
     this.bottom_screen = this.MakeObj({type: "bottom_screen", x:0, y:h,
-                                width: w, height: 50});
+                                width: w, height: 1});
     this.bottom_screen.getWidth = vw;
     
     /** @var {sjs.Base} module:sjs.left_screen */
@@ -454,6 +448,8 @@ function _sjs(){
       if(Math.abs(this.sy) < 0.5)this.sy=0;
       this.sx -= this.friction*this.sx;
       this.sy -= this.friction*this.sy;
+      
+      if(this.isHeld && this.onHold != undefined){this.onHold();}
 
       if(this.followx_obj && this.followx_last){
         this.x += (this.followx_obj.getX() - this.followx_last);
@@ -491,6 +487,36 @@ function _sjs(){
       _this.onHit(this.type, "bottom_screen", _this.bounceOff);
       return this;
     }
+
+
+
+
+    this.setCourse = function(path){
+      var i = 0;
+      if(path.length > 0)
+        this.slide(path[0].dx, path[0].dy, path[0].duration, slideCallback.bind(this))
+      function slideCallback(){
+        if(++i < path.length)
+          this.slide(path[i].dx, path[i].dy, path[i].duration, slideCallback.bind(this));
+      }
+    };
+    this.slide = function(dx, dy, time, cb){
+      this.friction = 0;
+      var tot = 0, x0 = this.x, y0 = this.y, lastTime = null;
+      var timerId = requestAnimationFrame(updateSlide.bind(this));
+      function updateSlide(timeStamp) {
+        if(lastTime && timeStamp != lastTime){
+          tot += timeStamp - lastTime;
+          this.x = x0 + dx * (tot /(time*1000));
+          this.y = y0 + dy * (tot /(time*1000));
+          if(tot >= (time*1000))return (cb ? cb() : 0);
+        }
+        lastTime = timeStamp;
+        timerId = window.requestAnimationFrame(updateSlide.bind(this));
+      }
+    };
+
+
 
     this.followx = function(a){
       if(a.x == undefined && a.y == undefined &&
@@ -555,7 +581,7 @@ function _sjs(){
    * @desc Use <b>new sjs.Image()</b> to create a new instance.
    * @extends module:sjs.Movable
    */
-  this.Image = function(src,width,height) {
+ this.Image = function(src,width,height,radius,show) {
     if(height == undefined && width != undefined){
       var w = width; var h = width;
     } else {
@@ -567,6 +593,16 @@ function _sjs(){
       } else {
         var w = width; var h = height;
       }
+    if(radius== undefined){
+      this.radius=0;
+    }else{
+      this.radius=radius;
+    }
+    if(show==undefined){
+      this.show=false;
+    }else{
+      this.show=show;
+    }
       if(height == undefined && width == undefined){
         w = this.getWidth(); h = this.getHeight();
       }
@@ -577,6 +613,10 @@ function _sjs(){
       newnode = new Image();
       newnode.src = src;
       newnode.style.position = "absolute";
+    newnode.style.borderRadius="50%";
+    newnode.style.padding=""+radius+"px";
+    newnode.onmouseover=function(){tower.onmouseover();};
+    newnode.onmouseout=function(){tower.onmouseout();};
       newnode.ondragstart=function(){return false;};
       newnode.onmousedown=this.node.onmousedown;
       newnode.onmouseup  =this.node.onmouseup;
@@ -597,14 +637,16 @@ function _sjs(){
       t.appendChild(this.node);
     }
 
-    this.setHFlipImages = function(left,right){
-      this.left_img = left;
-      this.right_img = right;
-      if(this.facingLeft === undefined){
-        this.facingLeft = false;
-        this.faceLeft();
-      } else { this.setImage(this.facingLeft?this.left_img:this.right_img); }
-    }
+    this.setFlipImages = function(left,right,up,down){
+      if(up == undefined || down == undefined){
+        this.left_img = left;
+        this.right_img = right;
+      }else{
+        this.left_img = left;
+        this.right_img = right;
+        this.up_img = up;
+        this.down_img = down;
+      }
     this.isFacingLeft = function(){return this.facingLeft;}
     this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
@@ -619,7 +661,7 @@ function _sjs(){
         this.facingLeft=false;
       }
     }
-    this.faceHFlip = function(){
+    this.faceFlip = function(){
       if(this.facingLeft)
         this.faceRight();
       else
@@ -653,6 +695,28 @@ function _sjs(){
         this[serializeAttrs[i]] = src[serializeAttrs[i]];
       }
     }
+    this.faceLeft = function(){
+        this.setImage(this.left_img);
+    }
+    this.faceRight = function(){
+        this.setImage(this.right_img);
+    }
+    this.faceUp = function(){
+        this.setImage(this.up_img);
+    }
+    this.faceDown = function(){
+        this.setImage(this.down_img);
+    }
+
+    this.src = src;
+  this.onmouseover=function(){
+
+    this.node.style.border="2px solid black";
+  }
+  this.onmouseout=function(){
+    
+    this.node.style.border="none";
+  }
 
     this.node = new Image();
     this.node.src = this.src;
@@ -661,6 +725,15 @@ function _sjs(){
     if(w && h) {
       this.node.width = w; this.node.height = h;
     }
+    this.node.addEventListener("touchstart",(function(obj){ return function(e){obj.isHeld = true;} })(this) );
+    this.node.addEventListener("touchenter",(function(obj){ return function(e){alert('enter');obj.isHeld = true;} })(this) );
+    this.node.addEventListener("touchend", (function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("touchcancel",(function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("touchleave", (function(obj){ return function(e){obj.isHeld = false;} })(this));
+    this.node.addEventListener("mousedown",(function(obj){ return function(){obj.isHeld = true;} })(this));
+    this.node.addEventListener("mouseup", (function(obj){ return function(){obj.isHeld = false;} })(this));
+  this.node.addEventListener("onmouseover", (function(obj){return function(){this.node.style.border="2px solid black";}})(this));
+  this.node.addEventListener("onmouseout", (function(obj){return function(){this.node.style.border="none";}})(this));
     t.appendChild(this.node);
     _this.addToStage(this);
   };
@@ -671,13 +744,15 @@ function _sjs(){
   * @classdesc A simple wrapper for &lt;button&gt; DOM elements.
   * @extends module:sjs.Base
   */
-  this.Button = function(txt, callback, size, color) {
+  this.Button = function(txt, callback, size, color, font) {
     if(size == undefined)size=18;
     if(color == undefined)color="black";
+    if(font == undefined)font="Arial";
     this.setText = function(txt){this.node.innerHTML = txt;}
     this.node = document.createElement('button');
     this.node.style.position = "absolute";
     this.node.innerHTML = txt;
+    this.node.style.fontFamily=font;
     this.node.onclick = callback;
     this.node.style.fontSize=size+"px";
     this.node.style.color=color;
@@ -991,6 +1066,7 @@ function _sjs(){
     nImg.sx = o.sx;
     nImg.sy = o.sy;
     nImg.left_img   = o.left_img;
+    nImg.friction = o.friction;
     nImg.right_img  = o.right_img;
     nImg.facingLeft = o.facingLeft;
     nImg.noBounds   = o.noBounds;
@@ -1098,6 +1174,10 @@ function _sjs(){
 /** @global */
 var sjs = new _sjs();
 
+var W_KEY     = 87;
+var D_KEY     = 68;
+var S_KEY     = 83;
+var A_KEY     = 65;
 var UP_KEY    = 38;
 var DOWN_KEY  = 40;
 var LEFT_KEY  = 37;
