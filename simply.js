@@ -647,6 +647,7 @@ function _sjs(){
         this.up_img = up;
         this.down_img = down;
       }
+    }
     this.isFacingLeft = function(){return this.facingLeft;}
     this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
