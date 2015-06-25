@@ -1,5 +1,5 @@
 /*
- * SimplyJS JavaScript Library v1.0.2
+ * SimplyJS JavaScript Library v1.0.3
  *
  * Copyright(c) 2015 Simply Coding
  * https://www.simplycoding.org
