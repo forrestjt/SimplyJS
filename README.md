@@ -129,3 +129,18 @@ sjs.onHit("ball", "paddle", function(ball, paddle){
 ```
 
 this will cause the ball to bounce off the paddle and cause the ball's speed to be 'scaled' (multiplied by 2) whenever the ball hits the paddle. Note that the objects that have collided ball, and paddle are passed in to the callback.
+
+Also, we can detect when an object hits a wall by using one of the pre-built top_screen, bottom_screen, left_screen, right_screen objects.
+
+for example:
+
+```
+ball.noBounds = true;
+sjs.onHit("ball", ["top_screen", "bottom_screen"], function(){
+  alert("you loose");
+});
+```
+
+Will cause a popup whenever the ball hits either the top or bottom screen.
+This also demonstrates that an array can be used in place of a single type.
+**NOTE: the noBounds property must be set for detection to work with screen objects!**
