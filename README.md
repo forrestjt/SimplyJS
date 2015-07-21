@@ -1,5 +1,4 @@
-SimplyJS
-========
+# SimplyJS
 
 SimplyJS is a JavaScript library made to foster a love of programming, web development, and game design. SimplyJS provides a simplified way for making browser-based games using DOM-manipulation to make moveable Images, display text, and dynamically generate buttons.
 
@@ -62,6 +61,39 @@ paddle.setSize(50,100);
 
 We can also use the setSize function. Again we set the width to 50 and the height to 100.
 
+### Moving Objects Around
+
+To move objects they need to be pushed in a direction:
+
+```
+var ball = new sjs.Image("s.png");
+ball.pushUp();
+ball.pushLeft(2);
+```
+
+this will create an image named ball and push it up and to the left. Notice
+that by passing a number to pushLeft() we can change how much it will be pushed
+in that direction. So the ball be moving faster to the left than up.
+
+### Friction
+
+You may notice that when you are pushing objects around they will begin to slow down.
+This is due to the default amount of friction that an object is created with.
+Friction can make a big difference in games because controlling objects with a low amount of friction is challenging.
+
+To change an object's friction simply access it by using .friction after the object's name:
+```
+ball.friction = 0.5;
+```
+
+or to remove it entirely:
+
+```
+ball.friction = 0;
+```
+
+friction should be a number between 0 and 1.
+
 ### Controlling Objects
 While using the SimplyJS library we will be making objects. We will be using an image to represent our objects.
 In order to have the objects react how we want them too we need to give them a type. Here is an example of how to give an object a type:
@@ -84,3 +116,16 @@ paddle.followx(sjs.mouse);
 ```
 
 This will make it so wherever we move our mouse our paddle object will follow (horizontally at least).
+
+### Collision Handling
+
+We can trigger additional logic to execute when two object types collide by using the sjs.onHit() function:
+
+```
+sjs.onHit("ball", "paddle", function(ball, paddle){
+  sjs.bounceOff(ball, paddle);
+  ball.scaleSpeed(2);
+});
+```
+
+this will cause the ball to bounce off the paddle and cause the ball's speed to be 'scaled' (multiplied by 2) whenever the ball hits the paddle. Note that the objects that have collided ball, and paddle are passed in to the callback.
