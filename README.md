@@ -2,8 +2,9 @@
 
 SimplyJS is a JavaScript library made to foster a love of programming, web development, and game design. SimplyJS provides a simplified way for making browser-based games using DOM-manipulation to make moveable Images, display text, and dynamically generate buttons.
 
-(Plunker of Pong Example)[http://plnkr.co/edit/cgEsRStRQRFI5LyJlhCC]
-(Plunker of Skeleton)[http://plnkr.co/edit/IyOpIqcPTp9QD3ubU3Tq]
+[Plunker of Pong Example](http://plnkr.co/edit/cgEsRStRQRFI5LyJlhCC)
+
+[Plunker of Skeleton](http://plnkr.co/edit/IyOpIqcPTp9QD3ubU3Tq)
 
 ## Pong: A Simple Example
 First create a basic skeleton project and save it as pong.html:
