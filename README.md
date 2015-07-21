@@ -29,7 +29,7 @@ First create a basic skeleton project and save it as pong.html:
 </html>
 ```
 
-Now, we need some images. Go ahead and download simply.js, paddle.png, paddle2.png, s.png, or use your own.
+Now, we need some images. Go ahead and download [simply.js](http://host.simplycoding.org/simplyjs/simply.js), [paddle.png](http://host.simplycoding.org/images/paddle.png), [paddle2.png](http://host.simplycoding.org/images/paddle2.png), [s.png](http://host.simplycoding.org/images/s.png), or use your own.
 
 ### Starting the Library
 The first thing we must do is tell SimplyJS to open an element on our page. We do this by adding the line:
