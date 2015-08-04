@@ -24,7 +24,7 @@ function _sjs(){
   var key_state = {}, key_events = {};
   var _this = this;
 
-  /** 
+  /**
    * @func open
    * @desc Sets an element to be the root element for all
    * sjs objects.
@@ -39,7 +39,7 @@ function _sjs(){
     if(w == undefined && h == undefined){w=500;h=400;}
     if(w != undefined && h == undefined)h=w;
     if(w == 0){
-      w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) 
+      w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
       h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     }
     t = document.getElementById(target);
@@ -68,7 +68,7 @@ function _sjs(){
     this.bottom_screen = this.MakeObj({type: "bottom_screen", x:0, y:h,
                                 width: w, height: 1});
     this.bottom_screen.getWidth = vw;
-    
+
     /** @var {sjs.Base} module:sjs.left_screen */
     this.left_screen = this.MakeObj({type: "left_screen", x:-1, y:0,
                               width: 1, height: h});
@@ -114,7 +114,7 @@ function _sjs(){
     }
     t.onmousemove = function(e){
       _this.mouse.x = e.clientX - t.x;
-      _this.mouse.y = e.clientY - t.y;  
+      _this.mouse.y = e.clientY - t.y;
     }
     t.onmousedown = function(e){
       if(_this.stages[_this.stage].mouseDown!=undefined)
@@ -128,7 +128,7 @@ function _sjs(){
       sjs.mouse.x = e.changedTouches[0].pageX;
       sjs.mouse.y = e.changedTouches[0].pageY;
       if(_this.stages[_this.stage].touchEnd){
-        _this.stages[_this.stage].touchEnd();   
+        _this.stages[_this.stage].touchEnd();
         e.preventDefault();
       }
     });
@@ -180,7 +180,7 @@ function _sjs(){
      * @param {number} w - the new width in pixels
      */
     this.setWidth = function(w){if(w){this.node.style.width = w+"px";}return this;}
-    
+
     /**
      * @func module:sjs.Base#setHeight
      * @desc Sets the object's Height.
@@ -204,7 +204,7 @@ function _sjs(){
      */
     this.grow = function(a,b){if(a!=undefined&&b==undefined){b=a;}var c = this.getCenter(); this.setSize(this.getWidth()+a,this.getHeight()+b); this.centerAt(c.x,c.y); }
 
- 
+
     /**
      * @func module:sjs.Base#getX
      * @desc Gets the object's x position
@@ -222,19 +222,19 @@ function _sjs(){
     /**
      * @func module:sjs.Base#top
      * @desc Moves the object to the top of the screen (sets the y coordinate to 0).
-     */ 
+     */
     this.top = function(){this.y=0;return this;}
 
     /**
      * @func module:sjs.Base#top
      * @desc Aligns the object to the left side of the screen (sets the x coordinate to 0).
-     */ 
+     */
     this.left = function(){this.x=0;return this;}
 
     /**
      * @func module:sjs.Base#right
      * @desc Aligns the object flush against the right side of the screen.
-     */ 
+     */
     this.right = function(){
       this.x = (t.width - this.getWidth());
       this.node.style.left = Math.round(this.x) + "px";
@@ -244,7 +244,7 @@ function _sjs(){
     /**
      * @func module:sjs.Base#bottom
      * @desc Aligns the object flush against the bottom the screen.
-     */ 
+     */
     this.bottom = function(){
       this.y = (t.height - this.getHeight());
       this.node.style.top = Math.round(this.y) + "px";
@@ -345,7 +345,7 @@ function _sjs(){
      */
     this.moveRightOf = function(a){
       this.x=a.getX()+a.getWidth();
-    } 
+    }
 
     /**
      * @func module:sjs.Base#moveTopOf
@@ -360,7 +360,7 @@ function _sjs(){
      * @func module:sjs.Base#moveBottomOf
      * @desc Moves an object exactly below of another object.
      * @param a {Object} Object to move below of that is or derives from sjs.Base
-     */ 
+     */
     this.moveBottomOf = function(a){
       this.y=a.getY()+a.getHeight();
     }
@@ -375,11 +375,11 @@ function _sjs(){
       this.x = nx-this.getWidth()/2;
       this.y = ny-this.getHeight()/2;
     }
-     
+
     /**
      * @func module:sjs.Base#center
      * @desc Centers an object vertically and horizontally. Is chainable.
-     */ 
+     */
     this.center = function(){this.centerV();this.centerH();return this;};
 
     /**
@@ -448,7 +448,7 @@ function _sjs(){
       if(Math.abs(this.sy) < 0.5)this.sy=0;
       this.sx -= this.friction*this.sx;
       this.sy -= this.friction*this.sy;
-      
+
       if(this.isHeld && this.onHold != undefined){this.onHold();}
 
       if(this.followx_obj && this.followx_last){
@@ -583,15 +583,15 @@ function _sjs(){
    */
  this.Image = function(src,width,height,radius,show) {
     if(height == undefined && width != undefined){
-      var w = width; var h = width;
+      this.width = width; this.height = width;
     } else {
-      var w = width; var h = height;
+      this.width = width; this.height = height;
     }
     this.setImage = function(src, width, height){
       if(height == undefined && width != undefined){
-        var w = width; var h = width;
+        this.width = width; this.height = width;
       } else {
-        var w = width; var h = height;
+        this.width = width; this.height = height;
       }
     if(radius== undefined){
       this.radius=0;
@@ -604,7 +604,7 @@ function _sjs(){
       this.show=show;
     }
       if(height == undefined && width == undefined){
-        w = this.getWidth(); h = this.getHeight();
+        this.width = this.getWidth(); this.height = this.getHeight();
       }
       // save src in case object is serialized
       this.src = src;
@@ -677,7 +677,7 @@ function _sjs(){
     this.src = src;
 
     // Serialization for saving levels
-    var serializeAttrs = ['x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
+    var serializeAttrs = ['width', 'height', 'x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
 
     this.serialize = function(){
       var obj = {};
@@ -709,22 +709,25 @@ function _sjs(){
         this.setImage(this.down_img);
     }
 
-    this.src = src;
-  this.onmouseover=function(){
+    this.onmouseover=function(){
 
-    this.node.style.border="2px solid black";
-  }
-  this.onmouseout=function(){
-    
-    this.node.style.border="none";
-  }
+      this.node.style.border="2px solid black";
+    }
+    this.onmouseout=function(){
+
+      this.node.style.border="none";
+    }
 
     this.node = new Image();
     this.node.src = this.src;
     this.node.style.position = "absolute";
     this.node.ondragstart=function(){return false;};
-    if(w && h) {
-      this.node.width = w; this.node.height = h;
+    if(this.width && this.height) {
+      this.node.width = this.width; this.node.height = this.height;
+    } else {
+      this.node.onload = (function(){
+        this.width = this.node.width; this.height = this.node.height;
+      }).bind(this);
     }
     this.node.addEventListener("touchstart",(function(obj){ return function(e){obj.isHeld = true;} })(this) );
     this.node.addEventListener("touchenter",(function(obj){ return function(e){alert('enter');obj.isHeld = true;} })(this) );
@@ -974,9 +977,9 @@ function _sjs(){
          {collisionEvents.splice(i,1);i--;}
     }
     collisionEvents.push(e);
-    
+
   }
-  
+
   /**
   * @func module:sjs.onHit
   * @desc Creates a new handler for when two objects
@@ -1006,12 +1009,12 @@ function _sjs(){
     if(typeof(a) == "object" && typeof(b) == "string") {
       for(var i=0;i<a.length;i++)
         addCollisionEvent({handler: callback, aType: a[i], bType: b, flag: true, per:percent, stages: stages});
-      
+
     }
     if(typeof(a) == "string" && typeof(b) == "object") {
       for(var i=0;i<b.length;i++)
         addCollisionEvent({handler: callback, aType: a, bType: b[i], flag: true, per:percent, stages: stages});
-      
+
     }
     if(typeof(a) == "string" && typeof(b) == "string") {
     addCollisionEvent({handler: callback, aType: a, bType: b, flag: true, per:percent, stages: stages});
@@ -1034,7 +1037,7 @@ function _sjs(){
     top_left.y = Math.min(a.y, b.y);
     bottom_right.x = Math.max(a.x+a.getWidth(), b.x+b.getWidth());
     bottom_right.y = Math.max(a.y+a.getHeight(), b.y+b.getHeight());
-  
+
     return {x:(a.getWidth() + b.getWidth()) - (bottom_right.x - top_left.x),
             y:(a.getHeight() + b.getHeight()) - (bottom_right.y - top_left.y)};
   }
@@ -1059,7 +1062,7 @@ function _sjs(){
   }
 
   this.addCopyToStage = function(o){
-    var nImg = new _this.Image(o.src);   
+    var nImg = new _this.Image(o.src);
     nImg.moveTo(o.getX(),o.getY());
     nImg.type = o.type;
     nImg.node.width  = o.node.width;
@@ -1081,7 +1084,7 @@ function _sjs(){
  // "Private" functions
 
   var _this = this;
-   
+
   function vw(){ if(_this.scroll){return _this.scroll.area.getWidth();} return t.width;}
   function vh(){ if(_this.scroll){return _this.scroll.area.getHeight();} return t.height;}
 
@@ -1133,9 +1136,9 @@ function _sjs(){
           (a.getY() >= (b.getY() + b.getHeight())) ||
           ((a.getX() + a.getWidth()) <= b.getX()) ||
           (a.getX() >= (b.getX() + b.getWidth()))
-    );  
+    );
   }
-   
+
   function inArray(v,a){
     for(var i=0;i<a.length;i++)
       if(a[i][0] == v[0] && a[i][1] == v[1])return i;
