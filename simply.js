@@ -615,15 +615,15 @@ function _sjs(){
       newnode.style.position = "absolute";
     newnode.style.borderRadius="50%";
     newnode.style.padding=""+radius+"px";
-    newnode.onmouseover=function(){tower.onmouseover();};
-    newnode.onmouseout=function(){tower.onmouseout();};
+    newnode.onmouseover=function(){typeof(tower) === 'undefined'?0:tower.onmouseover();};
+    newnode.onmouseout=function(){typeof(tower) === 'undefined'?0:tower.onmouseout();};
       newnode.ondragstart=function(){return false;};
       newnode.onmousedown=this.node.onmousedown;
       newnode.onmouseup  =this.node.onmouseup;
       newnode.onclick    =this.node.onclick;
       this.node = newnode;
-      if(w && h) {
-        this.node.width = w; this.node.height = h;
+      if(this.width && this.height) {
+        this.node.width = this.width; this.node.height = this.height;
       }
       this.offset(0,0);
       t.appendChild(this.node);
@@ -648,6 +648,17 @@ function _sjs(){
         this.down_img = down;
       }
     }
+    this.setHFlipImages = function(left, right){
+      this.left_img = left;
+      this.right_img = right;
+      if(this.facingLeft === undefined){
+        this.facingLeft = false;
+        this.faceLeft();
+      } else {
+        this.setImage(this.facingLeft?
+        this.left_img:this.right_img);
+      }
+    }
     this.isFacingLeft = function(){return this.facingLeft;}
     this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
@@ -662,11 +673,12 @@ function _sjs(){
         this.facingLeft=false;
       }
     }
-    this.faceFlip = function(){
-      if(this.facingLeft)
+    this.faceHFlip = this.faceFlip = function(){
+      if(this.facingLeft){
         this.faceRight();
-      else
+      } else {
         this.faceLeft();
+      }
     }
 
 
@@ -696,12 +708,12 @@ function _sjs(){
         this[serializeAttrs[i]] = src[serializeAttrs[i]];
       }
     }
-    this.faceLeft = function(){
-        this.setImage(this.left_img);
-    }
-    this.faceRight = function(){
-        this.setImage(this.right_img);
-    }
+    // this.faceLeft = function(){
+    //     this.setImage(this.left_img);
+    // }
+    // this.faceRight = function(){
+    //     this.setImage(this.right_img);
+    // }
     this.faceUp = function(){
         this.setImage(this.up_img);
     }
