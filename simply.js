@@ -613,10 +613,12 @@ function _sjs(){
       newnode = new Image();
       newnode.src = src;
       newnode.style.position = "absolute";
-    newnode.style.borderRadius="50%";
-    newnode.style.padding=""+radius+"px";
-    newnode.onmouseover=function(){typeof(tower) === 'undefined'?0:tower.onmouseover();};
-    newnode.onmouseout=function(){typeof(tower) === 'undefined'?0:tower.onmouseout();};
+      if(typeof(tower) !== 'undefined') {
+        newnode.style.borderRadius="50%";
+        newnode.style.padding=""+radius+"px";
+        newnode.onmouseover=function(){tower.onmouseover();};
+        newnode.onmouseout=function(){Tower.onmouseout();};
+      }
       newnode.ondragstart=function(){return false;};
       newnode.onmousedown=this.node.onmousedown;
       newnode.onmouseup  =this.node.onmouseup;
