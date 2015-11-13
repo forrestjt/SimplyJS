@@ -583,15 +583,15 @@ function _sjs(){
    */
  this.Image = function(src,width,height,radius,show) {
     if(height == undefined && width != undefined){
-      var w = width; var h = width;
+      this.width = width; this.height = width;
     } else {
-      var w = width; var h = height;
+      this.width = width; this.height = height;
     }
     this.setImage = function(src, width, height){
       if(height == undefined && width != undefined){
-        var w = width; var h = width;
+        this.width = width; this.height = width;
       } else {
-        var w = width; var h = height;
+        this.width = width; this.height = height;
       }
     if(radius== undefined){
       this.radius=0;
@@ -604,7 +604,7 @@ function _sjs(){
       this.show=show;
     }
       if(height == undefined && width == undefined){
-        w = this.getWidth(); h = this.getHeight();
+        this.width = this.getWidth(); this.height = this.getHeight();
       }
       // save src in case object is serialized
       this.src = src;
@@ -613,17 +613,19 @@ function _sjs(){
       newnode = new Image();
       newnode.src = src;
       newnode.style.position = "absolute";
-    newnode.style.borderRadius="50%";
-    newnode.style.padding=""+radius+"px";
-    newnode.onmouseover=function(){tower.onmouseover();};
-    newnode.onmouseout=function(){tower.onmouseout();};
+      if(typeof(tower) !== 'undefined') {
+        newnode.style.borderRadius="50%";
+        newnode.style.padding=""+radius+"px";
+        newnode.onmouseover=function(){tower.onmouseover();};
+        newnode.onmouseout=function(){Tower.onmouseout();};
+      }
       newnode.ondragstart=function(){return false;};
       newnode.onmousedown=this.node.onmousedown;
       newnode.onmouseup  =this.node.onmouseup;
       newnode.onclick    =this.node.onclick;
       this.node = newnode;
-      if(w && h) {
-        this.node.width = w; this.node.height = h;
+      if(this.width && this.height) {
+        this.node.width = this.width; this.node.height = this.height;
       }
       this.offset(0,0);
       t.appendChild(this.node);
@@ -648,6 +650,17 @@ function _sjs(){
         this.down_img = down;
       }
     }
+    this.setHFlipImages = function(left, right){
+      this.left_img = left;
+      this.right_img = right;
+      if(this.facingLeft === undefined){
+        this.facingLeft = false;
+        this.faceLeft();
+      } else {
+        this.setImage(this.facingLeft?
+        this.left_img:this.right_img);
+      }
+    }
     this.isFacingLeft = function(){return this.facingLeft;}
     this.pushHFacing = function(){ if(this.facingLeft)this.pushLeft(); else this.pushRight();}
     this.faceLeft = function(){
@@ -662,11 +675,12 @@ function _sjs(){
         this.facingLeft=false;
       }
     }
-    this.faceFlip = function(){
-      if(this.facingLeft)
+    this.faceHFlip = this.faceFlip = function(){
+      if(this.facingLeft){
         this.faceRight();
-      else
+      } else {
         this.faceLeft();
+      }
     }
 
 
@@ -677,7 +691,7 @@ function _sjs(){
     this.src = src;
 
     // Serialization for saving levels
-    var serializeAttrs = ['x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
+    var serializeAttrs = ['width', 'height', 'x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
 
     this.serialize = function(){
       var obj = {};
@@ -696,12 +710,12 @@ function _sjs(){
         this[serializeAttrs[i]] = src[serializeAttrs[i]];
       }
     }
-    this.faceLeft = function(){
-        this.setImage(this.left_img);
-    }
-    this.faceRight = function(){
-        this.setImage(this.right_img);
-    }
+    // this.faceLeft = function(){
+    //     this.setImage(this.left_img);
+    // }
+    // this.faceRight = function(){
+    //     this.setImage(this.right_img);
+    // }
     this.faceUp = function(){
         this.setImage(this.up_img);
     }
@@ -709,22 +723,24 @@ function _sjs(){
         this.setImage(this.down_img);
     }
 
-    this.src = src;
-  this.onmouseover=function(){
+    this.onmouseover=function(){
+      this.node.style.border="2px solid black";
+    }
 
-    this.node.style.border="2px solid black";
-  }
-  this.onmouseout=function(){
-
-    this.node.style.border="none";
-  }
+    this.onmouseout=function(){
+      this.node.style.border="none";
+    }
 
     this.node = new Image();
     this.node.src = this.src;
     this.node.style.position = "absolute";
     this.node.ondragstart=function(){return false;};
-    if(w && h) {
-      this.node.width = w; this.node.height = h;
+    if(this.width && this.height) {
+      this.node.width = this.width; this.node.height = this.height;
+    } else {
+      this.node.onload = (function(){
+        this.width = this.node.width; this.height = this.node.height;
+      }).bind(this);
     }
     this.node.addEventListener("touchstart",(function(obj){ return function(e){obj.isHeld = true;} })(this) );
     this.node.addEventListener("touchenter",(function(obj){ return function(e){alert('enter');obj.isHeld = true;} })(this) );
