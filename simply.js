@@ -1,11 +1,11 @@
 /*
- * SimplyJS JavaScript Library v1.0.3
+ * SimplyJS JavaScript Library v1.0.4
  *
- * Copyright(c) 2015 Simply Coding
+ * Copyright(c) 2016 Simply Coding
  * https://www.simplycoding.org
  * Released under the MIT license
  *
- * Date: 2015-06-25
+ * Date: 2016-04-4
  */
 
 /**
@@ -999,7 +999,7 @@ function _sjs(){
   * with the specified types collide. The types can
   * be the same.
   * @param {string} a - An object type for this rule
-  * @param {string} a - Another object type for this rule
+  * @param {string} b - Another object type for this rule
   * @param {function} callback - A callback function of the form
   * function(obj1, obj2){} that will be passed the two objects
   * that have collided.
@@ -1199,12 +1199,44 @@ function _sjs(){
 /** @global */
 var sjs = new _sjs();
 
-var W_KEY     = 87;
-var D_KEY     = 68;
-var S_KEY     = 83;
-var A_KEY     = 65;
 var UP_KEY    = 38;
 var DOWN_KEY  = 40;
 var LEFT_KEY  = 37;
 var RIGHT_KEY = 39;
 var SPACE_KEY = 32;
+var A_KEY = 65;
+var B_KEY = 66;
+var C_KEY = 67;
+var D_KEY = 68;
+var E_KEY = 69;
+var F_KEY = 70;
+var G_KEY = 71;
+var H_KEY = 72;
+var I_KEY = 73;
+var J_KEY = 74;
+var K_KEY = 75;
+var L_KEY = 76;
+var M_KEY = 77;
+var N_KEY = 78;
+var O_KEY = 79;
+var P_KEY = 80;
+var Q_KEY = 81;
+var R_KEY = 82;
+var S_KEY = 83;
+var T_KEY = 84;
+var U_KEY = 85;
+var V_KEY = 86;
+var W_KEY = 87;
+var X_KEY = 88;
+var Y_KEY = 89;
+var Z_KEY = 90;
+var ZERO_KEY = 48;
+var ONE_KEY = 49;
+var TWO_KEY = 50;
+var THREE_KEY = 51;
+var FOUR_KEY = 52;
+var FIVE_KEY = 53;
+var SIX_KEY = 54;
+var SEVEN_KEY = 55;
+var EIGHT_KEY = 56;
+var NINE_KEY = 57;
