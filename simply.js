@@ -56,8 +56,8 @@ function _sjs(){
     t.style.height   = h+"px";
     t.style.position = "relative";
     t.style.overflow = "hidden";
-    t.x = t.getBoundingClientRect().top;
-    t.y = t.getBoundingClientRect().left;
+    t.x = t.getBoundingClientRect().left;
+    t.y = t.getBoundingClientRect().top;
 
     /** @var {sjs.Base} module:sjs.top_screen */
     this.top_screen = this.MakeObj({type: "top_screen", x:0, y:-1,
@@ -113,8 +113,8 @@ function _sjs(){
 
     }
     t.onmousemove = function(e){
-      _this.mouse.x = e.clientX - t.x;
-      _this.mouse.y = e.clientY - t.y;
+      _this.mouse.x = e.clientX - t.x - _this.gx;
+      _this.mouse.y = e.clientY - t.y - _this.gy;
     }
     t.onmousedown = function(e){
       if(_this.stages[_this.stage].mouseDown!=undefined)
