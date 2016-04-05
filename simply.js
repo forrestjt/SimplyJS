@@ -973,12 +973,14 @@ function _sjs(){
 
   this.loadImageArray = function(str){
     var array = JSON.parse(str);
+    var newArray = [];
     if(!(array instanceof Array))return console.log("loadImageArray(): Input error");
     for(var i in array){
       if(array[i].classType === 'Image'){
-        new _this.Image(array[i]);
+        newArray.push(new _this.Image(array[i]));
       }
     }
+    return newArray;
   };
 
   addCollisionEvent = function(e){
