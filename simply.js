@@ -95,6 +95,8 @@ function _sjs(){
     this.mouse = this.MakeObj({width:1,height:1});
     this.mouse.x = undefined;
     this.mouse.y = undefined;
+    this.mouse.getX = function(){ return _this.mouse.rx - t.x - _this.gx; };
+    this.mouse.getY = function(){ return _this.mouse.ry - t.y - _this.gy; };
 
     this.makeStage("default");
 
@@ -113,6 +115,8 @@ function _sjs(){
 
     }
     t.onmousemove = function(e){
+      _this.mouse.rx = e.clientX;
+      _this.mouse.ry = e.clientY;
       _this.mouse.x = e.clientX - t.x - _this.gx;
       _this.mouse.y = e.clientY - t.y - _this.gy;
     }
