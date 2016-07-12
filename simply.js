@@ -695,7 +695,7 @@ function _sjs(){
     this.src = src;
 
     // Serialization for saving levels
-    var serializeAttrs = ['width', 'height', 'x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType'];
+    var serializeAttrs = ['width', 'height', 'x', 'y', 'sx','sy', 'ax', 'ay', 'topSpeed', 'src', 'type', 'facingLeft', 'left_img', 'right_img', 'friction', 'classType', 'noBounds'];
 
     this.serialize = function(){
       var obj = {};
