@@ -534,7 +534,7 @@ function _sjs(){
     this.followy = function(a){
       if(a.x == undefined && a.y == undefined &&
         _this.mouse.x == undefined && _this.mouse.y == undefined){
-        (function(o){setTimeout(function(){o.followx(_this.mouse);},100);})(this);
+        (function(o){setTimeout(function(){o.followy(_this.mouse);},100);})(this);
         return;
       }
       this.followy_obj = a;
