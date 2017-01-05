@@ -20,6 +20,7 @@ function _sjs(){
   this.gx = 0;
   this.gy = 0;
   this.scroll;
+  this.paused = false;
   var collisionEvents = [], collided = [];
   var key_state = {}, key_events = {};
   var _this = this;
@@ -840,6 +841,7 @@ function _sjs(){
   }
 
   this.updateStage = function(){
+    if(_this.paused) { return; }
     for(var i=0;i<this.objects.length;i++){
       this.objects[i].update();
     }
@@ -887,6 +889,12 @@ function _sjs(){
   this.addKeysFromStage = function(stage){
     for(k in key_events[stage])
       key_events[this.stage][k] = key_events[stage][k];
+  }
+
+  this.handleKeyDown = function(key, callback){
+    document.addEventListener('keydown', function(e) {
+      if(e.keyCode === key) { callback(e); }
+    });
   }
 
   this.keyDown = function(key, callback){
@@ -1100,6 +1108,14 @@ function _sjs(){
 
   this.getWidth  = function(){return t.width;}
   this.getHeight = function(){return t.height;}
+
+  this.pause = function() {
+    _this.paused = true;
+  }
+
+  this.resume = function() {
+    _this.paused = false;
+  }
 
  // "Private" functions
 
