@@ -614,7 +614,7 @@ function _sjs(){
       // save src in case object is serialized
       this.src = src;
 
-      if(this.node)t.removeChild(this.node);
+      if(this.node && this.node.parentNode == t)t.removeChild(this.node);
       newnode = new Image();
       newnode.src = src;
       newnode.style.position = "absolute";
