@@ -456,11 +456,11 @@ function _sjs(){
 
       if(this.isHeld && this.onHold != undefined){this.onHold();}
 
-      if(this.followx_obj && this.followx_last){
+      if(this.followx_obj && !isNaN(this.followx_last)){
         this.x += (this.followx_obj.getX() - this.followx_last);
         this.followx_last = this.followx_obj.getX();
       }
-      if(this.followy_obj && this.followy_last){
+      if(this.followy_obj && !isNaN(this.followy_last)){
         this.y += (this.followy_obj.getY() - this.followy_last);
         this.followy_last = this.followy_obj.getY();
       }
