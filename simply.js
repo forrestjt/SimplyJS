@@ -1,11 +1,11 @@
 /*
- * SimplyJS JavaScript Library v1.0.4
+ * SimplyJS JavaScript Library v1.0.5
  *
- * Copyright(c) 2016 Simply Coding
+ * Copyright(c) 2017 Simply Coding
  * https://www.simplycoding.org
  * Released under the MIT license
  *
- * Date: 2016-04-4
+ * Date: 2017-11-27
  */
 
 /**
@@ -215,14 +215,14 @@ function _sjs(){
      * @desc Gets the object's x position
      * @returns {number} the object's x coordinate
      */
-    this.getX = function(){if(this.fixed)return this.x-_this.gx; return this.x;}
+    this.getX = function(){if(this.fixed){return this.x - _this.gx;} return this.x;}
 
     /**
      * @func module:sjs.Base#getY
      * @desc Gets the object's y position
      * @returns {number} the object's y coordinate
      */
-    this.getY = function(){if(this.fixed)return this.y-_this.gy; return this.y;}
+    this.getY = function(){if(this.fixed){return this.y - _this.gy;} return this.y;}
 
     /**
      * @func module:sjs.Base#top
@@ -1061,10 +1061,10 @@ function _sjs(){
   }
   this.getDeltas = function(a,b) {
     var top_left = {}, bottom_right = {};
-    top_left.x = Math.min(a.x, b.x);
-    top_left.y = Math.min(a.y, b.y);
-    bottom_right.x = Math.max(a.x+a.getWidth(), b.x+b.getWidth());
-    bottom_right.y = Math.max(a.y+a.getHeight(), b.y+b.getHeight());
+    top_left.x = Math.min(a.getX(), b.getX());
+    top_left.y = Math.min(a.getY(), b.getY());
+    bottom_right.x = Math.max(a.getX()+a.getWidth(), b.getX()+b.getWidth());
+    bottom_right.y = Math.max(a.getY()+a.getHeight(), b.getY()+b.getHeight());
 
     return {x:(a.getWidth() + b.getWidth()) - (bottom_right.x - top_left.x),
             y:(a.getHeight() + b.getHeight()) - (bottom_right.y - top_left.y)};
@@ -1173,12 +1173,11 @@ function _sjs(){
   }
 
   this.testCollision = function(a, b){
-
     return !(
           ((a.getY() + a.getHeight()) <= (b.getY())) ||
-          (a.getY() >= (b.getY() + b.getHeight())) ||
-          ((a.getX() + a.getWidth()) <= b.getX()) ||
-          (a.getX() >= (b.getX() + b.getWidth()))
+           (a.getY() >= (b.getY() + b.getHeight()))  ||
+          ((a.getX() + a.getWidth()) <= b.getX())    ||
+           (a.getX() >= (b.getX() + b.getWidth()))
     );
   }
 
